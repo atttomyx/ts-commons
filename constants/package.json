@@ -19,7 +19,7 @@
   "homepage": "https://github.com/atttomyx/ts-commons/tree/main/constants#readme",
   "scripts": {
     "build": "tsc",
-    "publish": "yarn publish --access public"
+    "publish:public": "yarn publish --access public"
   },
   "devDependencies": {
     "@types/node": "^24.6.2",
