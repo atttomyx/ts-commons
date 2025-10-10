@@ -19,7 +19,7 @@
   "homepage": "https://github.com/atttomyx/ts-commons/tree/main/services#readme",
   "scripts": {
     "build": "tsc",
-    "publish": "yarn npm publish --access public"
+    "publish": "yarn publish --access public"
   },
   "peerDependencies": {
     "@milesoft/typescript-constants": "^1.0.0",
