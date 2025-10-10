@@ -1,0 +1,23 @@
+{
+  "name": "@milesoft/typescript-utils",
+  "version": "1.0.0",
+  "description": "Reusable TypeScript utility functions for array entity management, error handling, storage, and more.",
+  "license": "MIT",
+  "author": "Milesoft",
+  "main": "/dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "publish": "yarn npm publish --access public"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "yarn@3.6.4"
+}
