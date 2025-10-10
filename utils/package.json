@@ -11,6 +11,12 @@
     "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atttomyx/ts-commons.git",
+    "directory": "utils"
+  },
+  "homepage": "https://github.com/atttomyx/ts-commons/tree/main/utils#readme",
   "scripts": {
     "build": "tsc",
     "publish": "yarn npm publish --access public"
