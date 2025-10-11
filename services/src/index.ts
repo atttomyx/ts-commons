@@ -2,6 +2,7 @@ import {type AuthUser, type LoginResponse, type RecoverResponse, type Login, typ
 import {type Account, type Branding, type Join, type AccountUser, accountService} from "./accountService";
 import {type Profile, type User, type UserUtils, type UserList, userService} from "./userService";
 import {type Type, type TypeList, typeService} from "./typeService";
+import {cloudinaryService} from "./cloudinaryService";
 
 // auth
 export {AuthUser};
@@ -29,3 +30,6 @@ export {userService};
 export {Type};
 export {TypeList};
 export {typeService};
+
+// cloudinary
+export {cloudinaryService};
