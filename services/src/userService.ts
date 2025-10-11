@@ -59,7 +59,7 @@ class UserService {
         retries?: number,
         userUtils: UserUtils
     }): void => {
-        this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries);
+        this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
         this.userUtils = userUtils;
     }
 

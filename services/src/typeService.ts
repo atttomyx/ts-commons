@@ -31,7 +31,7 @@ class TypeService {
         timeout?: number,
         retries?: number,
     }): void => {
-        this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries);
+        this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
     public listTypes = (

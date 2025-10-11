@@ -1,5 +1,6 @@
-import {authService, type User, type UserUtils} from "@milesoft/typescript-services";
 import {type AxiosError, type AxiosInstance,} from "axios";
+import {type User, type UserUtils} from "./userService";
+import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
@@ -63,8 +64,8 @@ class AccountService {
         accountUtils: AccountUtils,
         userUtils: UserUtils,
     }): void => {
-        this.axiosInstance1 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries);
-        this.axiosInstance2 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries); // todo: without auth headers
+        this.axiosInstance1 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
+        this.axiosInstance2 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, false);
         this.accountUtils = accountUtils;
         this.userUtils = userUtils;
     }

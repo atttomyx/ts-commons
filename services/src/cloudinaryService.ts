@@ -1,5 +1,5 @@
-import axios, {type AxiosError, type AxiosInstance, type AxiosRequestConfig,} from "axios";
-import axiosRetry from "axios-retry";
+import {type AxiosError, type AxiosInstance,} from "axios";
+import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
@@ -12,23 +12,13 @@ class CloudinaryService {
         this.axiosInstance = null;
     }
 
-    public init = ({cloudinaryId, timeout = 60 * 1000, retries = 3}: {
+    public init = ({cloudinaryId, timeout, retries}: {
         cloudinaryId: string,
         timeout?: number,
         retries?: number,
     }): void => {
-        const instance = axios.create({
-            baseURL: `https://api.cloudinary.com/v1_1/${cloudinaryId}`,
-            timeout: timeout,
-        } as AxiosRequestConfig);
-
-        axiosRetry(instance, {
-            retries: retries,
-            retryDelay: axiosRetry.exponentialDelay,
-            retryCondition: axiosRetry.isSafeRequestError,
-        });
-
-        this.axiosInstance = instance;
+        const baseUrl = `https://api.cloudinary.com/v1_1/${cloudinaryId}`;
+        this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, false);
     }
 
     public uploadAccountImage = (accountId: string, image: Blob | File, success: SuccessCallback<string>, failure: FailureCallback) => {

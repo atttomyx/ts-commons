@@ -8,6 +8,7 @@ import axios, {
     type InternalAxiosRequestConfig
 } from "axios";
 import axiosRetry from "axios-retry";
+import {type Account} from "./accountService";
 import {type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescript-utils";
 import {keys} from "@milesoft/typescript-constants";
 
@@ -20,23 +21,6 @@ export interface AuthUser {
     userId: string;
     email: string;
     roles: string[];
-}
-
-export interface AccountBranding {
-    logoUrl: string | null;
-    logoContainsName: boolean;
-    primaryColor: string;
-    secondaryColor: string;
-}
-
-export interface Account {
-    id: string;
-    status: string | null;
-    name: string;
-    website: string | null;
-    branding: AccountBranding;
-    created: string;
-    updated: string;
 }
 
 export interface LoginResponse {
@@ -111,14 +95,11 @@ class AuthService {
             return Promise.reject(err);
         };
 
-        this.axiosInstance1 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries);
-        this.axiosInstance2 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries);
-
-        this.axiosInstance2.interceptors.request.clear();
-        this.axiosInstance2.interceptors.response.clear();
+        this.axiosInstance1 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
+        this.axiosInstance2 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries, false);
     }
 
-    public createConfiguredAxiosInstance = (baseUrl: string, timeout: number = 60 * 1000, retries: number = 3): AxiosInstance => {
+    public createConfiguredAxiosInstance = (baseUrl: string, timeout: number = 60 * 1000, retries: number = 3, interceptors: boolean = true): AxiosInstance => {
         const instance = axios.create({
             baseURL: baseUrl,
             timeout: timeout,
@@ -130,8 +111,10 @@ class AuthService {
             retryCondition: axiosRetry.isSafeRequestError,
         });
 
-        instance.interceptors.request.use(this.onRequestSuccess!);
-        instance.interceptors.response.use(this.onResponseSuccess!, this.onResponseError!);
+        if (interceptors) {
+            instance.interceptors.request.use(this.onRequestSuccess!);
+            instance.interceptors.response.use(this.onResponseSuccess!, this.onResponseError!);
+        }
 
         return instance;
     }

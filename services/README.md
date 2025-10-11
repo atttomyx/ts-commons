@@ -17,6 +17,8 @@ The package exports singleton instances of service classes, each managing API ca
 | :--- | :--- | :--- |
 | **`authService`** | Authentication and Authorization | Initializes and manages `axios` instances (including one *without* auth headers for login/recovery). Handles JWT storage, request cancellation, and unauthenticated response interceptors. |
 | **`userService`** | User and Profile Management | Provides CRUD operations (`list`, `create`, `save`, `delete`) for user entities, and dedicated methods for profile management. Requires an external `UserUtils` object for entity sanitation. |
+| **`accountService`** | Account Management and Joining | Provides logic for loading, saving, and joining accounts. Requires an external `AccountUtils` object for entity sanitation. |
+| **`cloudinaryService`** | Image Uploads | Dedicated service for uploading user and account images to the configured Cloudinary instance. |
 | **`typeService`** | Generic Type/Data Management | Provides standardized CRUD operations for general data types/entities within the system. |
 
 -----
@@ -56,7 +58,7 @@ Before making any requests, the service objects **must be initialized** to confi
 **Note:** `userService` and other services rely on `authService` for its configured `axios` instance.
 
 ```typescript
-import { authService, userService } from "@milesoft/typescript-services";
+import { authService, userService, accountService, cloudinaryService } from "@milesoft/typescript-services";
 
 // Define unauthenticated handler
 const handleUnauthenticated = () => {
@@ -65,26 +67,44 @@ const handleUnauthenticated = () => {
     window.location.href = '/login';
 };
 
-// Required utility for user data formatting
+// Required utilities for data formatting
 const myAppUserUtils = {
     sanitizeUser: (user) => { /* ... */ },
     sanitizeProfile: (profile) => { /* ... */ },
 };
 
+const myAppAccountUtils = {
+    sanitizeAccount: (account) => { /* ... */ },
+};
+
+
 // 1. Initialize Auth Service (Must be first)
 authService.init({
-    baseUrl: 'https://api.yourdomain.com',
+    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
     timeout: 30000,
     retries: 3,
     onUnauthenticated: handleUnauthenticated,
 });
 
 // 2. Initialize other services
-userService.init({
-    baseUrl: 'https://api.yourdomain.com',
+accountService.init({
+    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    accountUtils: myAppAccountUtils,
     userUtils: myAppUserUtils,
 });
-// typeService.init({...});
+
+userService.init({
+    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    userUtils: myAppUserUtils,
+});
+
+typeService.init({
+    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+});
+
+cloudinaryService.init({
+    cloudinaryId: 'your-cloudinary-cloud-name', // e.g., 'milesoft'
+});
 ```
 
 ### 2\. Making Requests
@@ -118,6 +138,21 @@ typeService.createType(
     },
     (error) => {
         console.error("Type creation failed:", error);
+    }
+);
+
+// --- Example: Uploading an image ---
+const imageFile: File = new File(["..."], "logo.png");  // Assume you have a file object
+const accountId: string = "a1b2c3d4e5f6";
+
+cloudinaryService.uploadAccountImage(
+    accountId,
+    imageFile,
+    (secureUrl) => {
+        console.log("Image uploaded to:", secureUrl);
+    },
+    (error) => {
+        console.error("Image upload failed:", error);
     }
 );
 ```
