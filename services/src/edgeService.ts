@@ -1,25 +1,9 @@
-import {authService} from "@milesoft/typescript-services";
-import {type AxiosError, type AxiosInstance,} from "axios";
+import {type AxiosError, type AxiosInstance} from "axios";
+import type {Edge, EdgeList} from "./types";
+import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface Edge {
-    id: string;
-    sourceNodeId: string;
-    targetNodeId: string;
-    category: string;
-    label: string;
-    created: string;
-    updated: string;
-    metadata: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
-}
-
-export interface EdgeList {
-    edges: Edge[];
-    cursor: string | null;
-}
 
 class EdgeService {
 

@@ -8,40 +8,12 @@ import axios, {
     type InternalAxiosRequestConfig
 } from "axios";
 import axiosRetry from "axios-retry";
-import {type Account} from "./accountService";
+import type {Account, AuthUser, LoginList, LoginResponse, RecoverResponse} from "./types";
 import {type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescript-utils";
 import {keys} from "@milesoft/typescript-constants";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface AuthUser {
-    appId: string;
-    accountId: string;
-    userId: string;
-    email: string;
-    roles: string[];
-}
-
-export interface LoginResponse {
-    accounts: Account[] | null;
-    cursor: string;
-}
-
-export interface RecoverResponse {
-    password: string;
-}
-
-export interface Login {
-    userId: string;
-    created: string;
-    updated: string;
-}
-
-export interface LoginList {
-    users: Login[];
-    cursor: string | null;
-}
 
 class AuthService {
 

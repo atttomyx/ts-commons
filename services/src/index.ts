@@ -1,22 +1,34 @@
-import {
-    authService,
-    type AuthUser,
-    type Login,
-    type LoginList,
-    type LoginResponse,
-    type RecoverResponse
-} from "./authService";
-import {
-    type Account,
-    accountService,
-    type AccountUser,
-    type AccountUtils,
-    type Branding,
-    type Join
-} from "./accountService";
-import {type Profile, type User, type UserList, userService, type UserUtils} from "./userService";
-import {type Type, type TypeList, typeService} from "./typeService";
+import type {
+    Account,
+    AccountUser,
+    AccountUtils,
+    AuthUser,
+    Branding,
+    Edge,
+    EdgeList,
+    Join,
+    LabeledAddress,
+    LabeledString,
+    Login,
+    LoginList,
+    LoginResponse,
+    Node,
+    NodeList,
+    Profile,
+    RecoverResponse,
+    Type,
+    TypeList,
+    User,
+    UserList,
+    UserUtils,
+} from "./types";
+import {authService} from "./authService";
+import {accountService} from "./accountService";
+import {userService} from "./userService";
+import {typeService} from "./typeService";
 import {cloudinaryService} from "./cloudinaryService";
+import {nodeService} from "./nodeService";
+import {edgeService} from "./edgeService";
 
 // auth
 export {AuthUser};
@@ -48,3 +60,15 @@ export {typeService};
 
 // cloudinary
 export {cloudinaryService};
+
+// nodes
+export {LabeledString};
+export {LabeledAddress};
+export {Node};
+export {NodeList};
+export {nodeService};
+
+// edges
+export {Edge};
+export {EdgeList};
+export {edgeService};

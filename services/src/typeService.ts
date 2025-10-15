@@ -1,22 +1,9 @@
-import {type AxiosError, type AxiosInstance,} from "axios";
+import {type AxiosError, type AxiosInstance} from "axios";
+import type {Type, TypeList} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface Type {
-    id: string;
-    title: string;
-    description: string | null;
-    roles: string[];
-    created: string;
-    updated: string;
-}
-
-export interface TypeList {
-    users: Type[];
-    cursor: string | null;
-}
 
 class TypeService {
 

@@ -1,47 +1,9 @@
-import {type AxiosError, type AxiosInstance,} from "axios";
-import {type User, type UserUtils} from "./userService";
+import {type AxiosError, type AxiosInstance} from "axios";
+import type {Account, AccountUser, AccountUtils, Join, UserUtils} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface Branding {
-    logoUrl: string | null;
-    logoContainsName: boolean;
-    primaryColor: string;
-    secondaryColor: string;
-}
-
-export interface Account {
-    id: string;
-    name: string;
-    website: string | null;
-    branding: Branding;
-    allowJoin: boolean;
-    code: string | null;
-    created: string;
-    modified: string;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
-}
-
-export interface Join {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string | null;
-    password: string;
-    code: string;
-}
-
-export interface AccountUser {
-    account: Account;
-    user: User;
-}
-
-export interface AccountUtils {
-    sanitizeAccount: (account: Account) => void;
-}
 
 class AccountService {
 

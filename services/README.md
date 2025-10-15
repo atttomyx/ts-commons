@@ -20,6 +20,8 @@ The package exports singleton instances of service classes, each managing API ca
 | **`accountService`** | Account Management and Joining | Provides logic for loading, saving, and joining accounts. Requires an external `AccountUtils` object for entity sanitation. |
 | **`cloudinaryService`** | Image Uploads | Dedicated service for uploading user and account images to the configured Cloudinary instance. |
 | **`typeService`** | Generic Type/Data Management | Provides standardized CRUD operations for general data types/entities within the system. |
+| **`nodeService`** | Node/Entity Management | Provides CRUD and list operations for generic graph nodes, including contact information and metadata. |
+| **`edgeService`** | Edge/Relationship Management | Provides CRUD and list operations for relationships (edges) between nodes. |
 
 -----
 
@@ -77,10 +79,9 @@ const myAppAccountUtils = {
     sanitizeAccount: (account) => { /* ... */ },
 };
 
-
 // 1. Initialize Auth Service (Must be first)
 authService.init({
-    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    baseUrl: 'https://api.yourdomain.com',
     timeout: 30000,
     retries: 3,
     onUnauthenticated: handleUnauthenticated,
@@ -88,22 +89,30 @@ authService.init({
 
 // 2. Initialize other services
 accountService.init({
-    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    baseUrl: 'https://api.yourdomain.com',
     accountUtils: myAppAccountUtils,
     userUtils: myAppUserUtils,
 });
 
 userService.init({
-    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    baseUrl: 'https://api.yourdomain.com',
     userUtils: myAppUserUtils,
 });
 
 typeService.init({
-    baseUrl: '[https://api.yourdomain.com](https://api.yourdomain.com)',
+    baseUrl: 'https://api.yourdomain.com',
 });
 
 cloudinaryService.init({
     cloudinaryId: 'your-cloudinary-cloud-name', // e.g., 'milesoft'
+});
+
+nodeService.init({
+    baseUrl: 'https://api.yourdomain.com',
+});
+
+edgeService.init({
+    baseUrl: 'https://api.yourdomain.com',
 });
 ```
 
@@ -153,6 +162,41 @@ cloudinaryService.uploadAccountImage(
     },
     (error) => {
         console.error("Image upload failed:", error);
+    }
+);
+
+// --- Example: Creating a new Node Entity ---
+const newNodeData: Partial<Node> = {
+    firstName: "John",
+    lastName: "Doe",
+    emails: [{label: "Work", value: "john@work.com"}],
+};
+
+nodeService.createNode(
+    newNodeData,
+    (createdNode) => {
+        console.log("Node created with ID:", createdNode.id);
+    },
+    (error) => {
+        console.error("Node creation failed:", error);
+    }
+);
+
+// --- Example: Creating an Edge (relationship) between two Nodes ---
+const newEdgeData: Partial<Edge> = {
+    sourceNodeId: "node-123",
+    targetNodeId: "node-456",
+    category: "WorksWith",
+    label: "Colleague",
+};
+
+edgeService.createEdge(
+    newEdgeData,
+    (createdEdge) => {
+        console.log("Edge created from", createdEdge.sourceNodeId, "to", createdEdge.targetNodeId);
+    },
+    (error) => {
+        console.error("Edge creation failed:", error);
     }
 );
 ```

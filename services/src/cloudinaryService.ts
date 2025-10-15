@@ -1,4 +1,4 @@
-import {type AxiosError, type AxiosInstance,} from "axios";
+import {type AxiosError, type AxiosInstance} from "axios";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;

@@ -1,46 +1,9 @@
-import {authService} from "@milesoft/typescript-services";
-import {type AxiosError, type AxiosInstance,} from "axios";
+import {type AxiosError, type AxiosInstance} from "axios";
+import type {LabeledAddress, LabeledString, Node, NodeList} from "./types";
+import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface LabeledString {
-    label: string;
-    value: string;
-}
-
-export interface LabeledAddress {
-    label: string;
-    line1: string | null;
-    line2: string | null;
-    locality: string | null;
-    region: string | null;
-    postalCode: string | null;
-    country: string | null;
-}
-
-export interface Node {
-    id: string;
-    imageUrl: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    phones: LabeledString[];
-    emails: LabeledString[];
-    urls: LabeledString[];
-    addresses: LabeledAddress[];
-    dates: LabeledString[];
-    others: LabeledString[];
-    tags: string[];
-    created: string;
-    updated: string;
-    metadata: Record<string, any>;
-    decorations: Record<string, string | number | boolean | null>;
-}
-
-export interface NodeList {
-    nodes: Node[];
-    cursor: string | null;
-}
 
 class NodeService {
 
@@ -150,7 +113,7 @@ class NodeService {
         .catch(failure);
     }
 
-    private sanitizeLabeledStrings = (labeledStrings: LabeledString[]) => {
+    private sanitizeLabeledStrings = (labeledStrings?: LabeledString[]) => {
         return labeledStrings ? labeledStrings.map(this.sanitizeLabeledString) : [];
     }
 
@@ -161,7 +124,7 @@ class NodeService {
         }
     }
 
-    private sanitizeLabeledAddresses = (labeledAddresses: LabeledAddress[]) => {
+    private sanitizeLabeledAddresses = (labeledAddresses?: LabeledAddress[]) => {
         return labeledAddresses ? labeledAddresses.map(this.sanitizeLabeledAddress) : [];
     }
 

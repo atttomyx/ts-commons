@@ -1,47 +1,9 @@
 import {type AxiosError, type AxiosInstance,} from "axios";
+import type {Profile, User, UserList, UserUtils} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface User {
-    id: string;
-    firstName: string | null;
-    lastName: string | null;
-    email: string;
-    phone: string | null;
-    imageUrl: string | null;
-    typeId: string | null;
-    roles: string[];
-    created: string;
-    updated: string;
-    types: Record<string, boolean>;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
-}
-
-export interface Profile {
-    id: string;
-    firstName: string | null;
-    lastName: string | null;
-    email: string;
-    phone: string | null;
-    imageUrl: string | null;
-    created: string;
-    updated: string;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
-}
-
-export interface UserList {
-    users: User[];
-    cursor: string | null;
-}
-
-export interface UserUtils {
-    sanitizeUser: (user: User) => void;
-    sanitizeProfile: (profile: Profile) => void;
-}
 
 class UserService {
 
