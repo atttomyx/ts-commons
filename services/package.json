@@ -1,6 +1,6 @@
 {
   "name": "@milesoft/typescript-services",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Client-side service classes for Milesoft REST APIs, centralizing Axios configuration, authentication, and error handling.",
   "license": "MIT",
   "author": "Milesoft",
