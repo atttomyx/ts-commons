@@ -60,14 +60,17 @@ class AccountService {
         .catch(failure);
     }
 
-    public joinAccount = (user: Join, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
+    public joinAccount = (join: Join, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
         this.axiosInstance2!.post("/api/v1/account/join", {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phone: user.phone,
-            password: user.password,
-            code: user.code,
+            user: join.user ? {
+                firstName: join.user.firstName,
+                lastName: join.user.lastName,
+                email: join.user.email,
+                phone: join.user.phone,
+                password: join.user.password,
+            } : undefined,
+            google: join.google,
+            code: join.code,
         })
         .then(response => {
             const json = response.data;

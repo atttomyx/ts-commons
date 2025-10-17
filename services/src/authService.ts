@@ -60,8 +60,12 @@ class AuthService {
         this.onResponseError = (err: AxiosError): AxiosPromise => {
             const status: number = err.response ? err.response.status : 0;
 
-            if ((status === 403 || status === 401) && onUnauthenticated) {
-                onUnauthenticated();
+            if (status === 401 || status === 403) {
+                this.clearAuthToken();
+
+                if (onUnauthenticated) {
+                    onUnauthenticated();
+                }
             }
 
             return Promise.reject(err);
@@ -185,14 +189,14 @@ class AuthService {
         .catch(failure);
     }
 
-    public login = (
+    public userLogin = (
         email: string,
         password: string,
         accountId: string | null,
         success: SuccessCallback<LoginResponse>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance1!.post<LoginResponse>("/api/v1/auth/login", {
+        this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/login", {
             email: email,
             password: password,
             rememberMe: true,
@@ -208,6 +212,45 @@ class AuthService {
             }
 
             success(response.data);
+        })
+        .catch(failure);
+    }
+
+    public googleLogin = (
+        token: string,
+        accountId: string | null,
+        success: SuccessCallback<LoginResponse>,
+        failure: FailureCallback
+    ): void => {
+        this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/google", {
+            token: token,
+            rememberMe: true,
+            accountId: accountId,
+        })
+        .then(response => {
+            const bearerToken: string | undefined = response.headers.authorization;
+
+            if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
+                const jwt: string = bearerToken.slice(7, bearerToken.length);
+
+                this.storeAuthToken(jwt);
+            }
+
+            success(response.data);
+        })
+        .catch(failure);
+    }
+
+    public linkGoogle = (
+        token: string,
+        success: SuccessCallback<void>,
+        failure: FailureCallback
+    ): void => {
+        this.axiosInstance1!.post("/api/v1/auth/linkGoogle", {
+            token: token,
+        })
+        .then(() => {
+            success();
         })
         .catch(failure);
     }

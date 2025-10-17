@@ -7,6 +7,7 @@ import type {
     Edge,
     EdgeList,
     Join,
+    JoinUser,
     LabeledAddress,
     LabeledString,
     Login,
@@ -39,6 +40,7 @@ export {authService};
 // account
 export {Account};
 export {Branding};
+export {JoinUser};
 export {Join};
 export {AccountUser};
 export {AccountUtils};

@@ -9,7 +9,7 @@ export interface AuthUser {
 }
 
 export interface LoginResponse {
-    accounts: Account[] | null;
+    accounts?: Account[];
     cursor: string;
 }
 
@@ -25,13 +25,13 @@ export interface Login {
 
 export interface LoginList {
     users: Login[];
-    cursor: string | null;
+    cursor?: string;
 }
 
 // account
 
 export interface Branding {
-    logoUrl: string | null;
+    logoUrl?: string;
     logoContainsName: boolean;
     primaryColor: string;
     secondaryColor: string;
@@ -40,22 +40,27 @@ export interface Branding {
 export interface Account {
     id: string;
     name: string;
-    website: string | null;
+    website?: string;
     branding: Branding;
     allowJoin: boolean;
-    code: string | null;
+    code?: string;
     created: string;
     modified: string;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
+    settings: Record<string, any>;
+    decorations: Record<string, any>;
 }
 
-export interface Join {
+export interface JoinUser {
     firstName: string;
     lastName: string;
     email: string;
-    phone: string | null;
+    phone?: string;
     password: string;
+}
+
+export interface Join {
+    user?: JoinUser;
+    google?: string;
     code: string;
 }
 
@@ -72,36 +77,37 @@ export interface AccountUtils {
 
 export interface User {
     id: string;
-    firstName: string | null;
-    lastName: string | null;
+    firstName?: string;
+    lastName?: string;
     email: string;
-    phone: string | null;
-    imageUrl: string | null;
-    typeId: string | null;
+    phone?: string;
+    imageUrl?: string;
+    typeId?: string;
     roles: string[];
     created: string;
     updated: string;
     types: Record<string, boolean>;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
+    settings: Record<string, any>;
+    decorations: Record<string, any>;
 }
 
 export interface Profile {
     id: string;
-    firstName: string | null;
-    lastName: string | null;
+    firstName?: string;
+    lastName?: string;
     email: string;
-    phone: string | null;
-    imageUrl: string | null;
+    phone?: string;
+    imageUrl?: string;
+    google?: boolean;
     created: string;
     updated: string;
-    settings: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
+    settings: Record<string, any>;
+    decorations: Record<string, any>;
 }
 
 export interface UserList {
     users: User[];
-    cursor: string | null;
+    cursor?: string;
 }
 
 export interface UserUtils {
@@ -114,7 +120,7 @@ export interface UserUtils {
 export interface Type {
     id: string;
     title: string;
-    description: string | null;
+    description?: string;
     roles: string[];
     created: string;
     updated: string;
@@ -122,7 +128,7 @@ export interface Type {
 
 export interface TypeList {
     types: Type[];
-    cursor: string | null;
+    cursor?: string;
 }
 
 // nodes
@@ -134,19 +140,19 @@ export interface LabeledString {
 
 export interface LabeledAddress {
     label: string;
-    line1: string | null;
-    line2: string | null;
-    locality: string | null;
-    region: string | null;
-    postalCode: string | null;
-    country: string | null;
+    line1?: string;
+    line2?: string;
+    locality?: string;
+    region?: string;
+    postalCode?: string;
+    country?: string;
 }
 
 export interface Node {
     id: string;
-    imageUrl: string | null;
-    firstName: string | null;
-    lastName: string | null;
+    imageUrl?: string;
+    firstName?: string;
+    lastName?: string;
     phones: LabeledString[];
     emails: LabeledString[];
     urls: LabeledString[];
@@ -157,12 +163,12 @@ export interface Node {
     created: string;
     updated: string;
     metadata: Record<string, any>;
-    decorations: Record<string, string | number | boolean | null>;
+    decorations: Record<string, any>;
 }
 
 export interface NodeList {
     nodes: Node[];
-    cursor: string | null;
+    cursor?: string;
 }
 
 // edges
@@ -175,11 +181,11 @@ export interface Edge {
     label: string;
     created: string;
     updated: string;
-    metadata: Record<string, string | number | boolean | null>;
-    decorations: Record<string, string | number | boolean | null>;
+    metadata: Record<string, any>;
+    decorations: Record<string, any>;
 }
 
 export interface EdgeList {
     edges: Edge[];
-    cursor: string | null;
+    cursor?: string;
 }
