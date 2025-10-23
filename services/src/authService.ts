@@ -8,7 +8,7 @@ import axios, {
     type InternalAxiosRequestConfig
 } from "axios";
 import axiosRetry from "axios-retry";
-import type {Account, AuthUser, LoginList, LoginResponse, RecoverResponse} from "./types";
+import type {Account, AuthUser, LoginList, LoginResponse, Profile, RecoverResponse} from "./types";
 import {type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescript-utils";
 import {keys} from "@milesoft/typescript-constants";
 
@@ -189,6 +189,28 @@ class AuthService {
         .catch(failure);
     }
 
+    public welcomeLogin = (
+        nonce: string,
+        success: SuccessCallback<RecoverResponse>,
+        failure: FailureCallback
+    ): void => {
+        this.axiosInstance2!.post<RecoverResponse>("/api/v1/auth/welcome", {
+            nonce: nonce,
+        })
+        .then(response => {
+            const bearerToken: string | undefined = response.headers.authorization;
+
+            if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
+                const jwt: string = bearerToken.slice(7, bearerToken.length);
+
+                this.storeAuthToken(jwt);
+            }
+
+            success(response.data);
+        })
+        .catch(failure);
+    }
+
     public userLogin = (
         email: string,
         password: string,
@@ -199,7 +221,6 @@ class AuthService {
         this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/login", {
             email: email,
             password: password,
-            rememberMe: true,
             accountId: accountId,
         })
         .then(response => {
@@ -224,7 +245,6 @@ class AuthService {
     ): void => {
         this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/google", {
             token: token,
-            rememberMe: true,
             accountId: accountId,
         })
         .then(response => {
@@ -243,14 +263,14 @@ class AuthService {
 
     public linkGoogle = (
         token: string,
-        success: SuccessCallback<void>,
+        success: SuccessCallback<Profile>,
         failure: FailureCallback
     ): void => {
         this.axiosInstance1!.post("/api/v1/auth/linkGoogle", {
             token: token,
         })
-        .then(() => {
-            success();
+        .then((response) => {
+            success(response.data);
         })
         .catch(failure);
     }
@@ -272,13 +292,15 @@ class AuthService {
     }
 
     public forgotPassword = (
-        email: string,
+        email: string | null,
+        phone: string | null,
         method: string,
         success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
         this.axiosInstance1!.post("/api/v1/auth/forgot", {
             email: email,
+            phone: phone,
             method: method,
         })
         .then(() => {
@@ -288,17 +310,19 @@ class AuthService {
     }
 
     public recoverPassword = (
-        email: string,
+        email: string | null,
+        phone: string | null,
         code: string,
-        success: SuccessCallback<string>,
+        success: SuccessCallback<RecoverResponse>,
         failure: FailureCallback
     ): void => {
         this.axiosInstance2!.put<RecoverResponse>("/api/v1/auth/recover", {
             email: email,
+            phone: phone,
             code: code,
         })
         .then(response => {
-            success(response.data.password);
+            success(response.data);
         })
         .catch(failure);
     }

@@ -10,7 +10,7 @@ export interface AuthUser {
 
 export interface LoginResponse {
     accounts?: Account[];
-    cursor: string;
+    cursor?: string;
 }
 
 export interface RecoverResponse {
