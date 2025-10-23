@@ -13,10 +13,6 @@ export interface LoginResponse {
     cursor?: string;
 }
 
-export interface RecoverResponse {
-    password: string;
-}
-
 export interface Login {
     userId: string;
     created: string;
@@ -99,6 +95,7 @@ export interface Profile {
     phone?: string;
     imageUrl?: string;
     google?: boolean;
+    temporary?: boolean;
     created: string;
     updated: string;
     settings: Record<string, any>;

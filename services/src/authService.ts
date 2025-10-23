@@ -3,12 +3,12 @@ import axios, {
     type AxiosInstance,
     type AxiosPromise,
     type AxiosRequestConfig,
-    type AxiosResponse,
+    type AxiosResponse, AxiosResponseHeaders,
     type CancelTokenSource,
-    type InternalAxiosRequestConfig
+    type InternalAxiosRequestConfig, RawAxiosResponseHeaders
 } from "axios";
 import axiosRetry from "axios-retry";
-import type {Account, AuthUser, LoginList, LoginResponse, Profile, RecoverResponse} from "./types";
+import type {Account, AuthUser, LoginList, LoginResponse, Profile} from "./types";
 import {type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescript-utils";
 import {keys} from "@milesoft/typescript-constants";
 
@@ -191,22 +191,15 @@ class AuthService {
 
     public welcomeLogin = (
         nonce: string,
-        success: SuccessCallback<RecoverResponse>,
+        success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.post<RecoverResponse>("/api/v1/auth/welcome", {
+        this.axiosInstance2!.post<void>("/api/v1/auth/welcome", {
             nonce: nonce,
         })
         .then(response => {
-            const bearerToken: string | undefined = response.headers.authorization;
-
-            if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
-                const jwt: string = bearerToken.slice(7, bearerToken.length);
-
-                this.storeAuthToken(jwt);
-            }
-
-            success(response.data);
+            this.extractAuthHeader(response.headers);
+            success();
         })
         .catch(failure);
     }
@@ -224,14 +217,7 @@ class AuthService {
             accountId: accountId,
         })
         .then(response => {
-            const bearerToken: string | undefined = response.headers.authorization;
-
-            if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
-                const jwt: string = bearerToken.slice(7, bearerToken.length);
-
-                this.storeAuthToken(jwt);
-            }
-
+            this.extractAuthHeader(response.headers);
             success(response.data);
         })
         .catch(failure);
@@ -248,14 +234,7 @@ class AuthService {
             accountId: accountId,
         })
         .then(response => {
-            const bearerToken: string | undefined = response.headers.authorization;
-
-            if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
-                const jwt: string = bearerToken.slice(7, bearerToken.length);
-
-                this.storeAuthToken(jwt);
-            }
-
+            this.extractAuthHeader(response.headers);
             success(response.data);
         })
         .catch(failure);
@@ -276,17 +255,17 @@ class AuthService {
     }
 
     public changePassword = (
-        existing: string,
+        existing: string | null,
         password: string,
-        success: SuccessCallback<void>,
+        success: SuccessCallback<Profile>,
         failure: FailureCallback
     ): void => {
         this.axiosInstance1!.put("/api/v1/auth/password", {
             existing: existing,
             password: password,
         })
-        .then(() => {
-            success();
+        .then((response) => {
+            success(response.data);
         })
         .catch(failure);
     }
@@ -298,7 +277,7 @@ class AuthService {
         success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance1!.post("/api/v1/auth/forgot", {
+        this.axiosInstance2!.post("/api/v1/auth/forgot", {
             email: email,
             phone: phone,
             method: method,
@@ -313,18 +292,44 @@ class AuthService {
         email: string | null,
         phone: string | null,
         code: string,
-        success: SuccessCallback<RecoverResponse>,
+        success: SuccessCallback<LoginResponse>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.put<RecoverResponse>("/api/v1/auth/recover", {
+        this.axiosInstance2!.put<LoginResponse>("/api/v1/auth/recover", {
             email: email,
             phone: phone,
             code: code,
         })
         .then(response => {
+            this.extractAuthHeader(response.headers);
             success(response.data);
         })
         .catch(failure);
+    }
+
+    public switchAccounts = (
+        accountId: string,
+        success: SuccessCallback<void>,
+        failure: FailureCallback
+    ): void => {
+        this.axiosInstance1!.put<void>("/api/v1/auth/switch", {
+            accountId: accountId,
+        })
+        .then(response => {
+            this.extractAuthHeader(response.headers);
+            success();
+        })
+        .catch(failure);
+    }
+
+    private extractAuthHeader = (headers: RawAxiosResponseHeaders | AxiosResponseHeaders): void => {
+        const bearerToken: string | undefined = headers.authorization;
+
+        if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
+            const jwt: string = bearerToken.slice(7, bearerToken.length);
+
+            this.storeAuthToken(jwt);
+        }
     }
 }
 

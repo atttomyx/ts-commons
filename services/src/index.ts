@@ -16,7 +16,6 @@ import type {
     Node,
     NodeList,
     Profile,
-    RecoverResponse,
     Type,
     TypeList,
     User,
@@ -34,7 +33,6 @@ import {edgeService} from "./edgeService";
 // auth
 export {AuthUser};
 export {LoginResponse};
-export {RecoverResponse};
 export {authService};
 
 // account
