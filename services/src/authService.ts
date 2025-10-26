@@ -18,8 +18,8 @@ type FailureCallback = (error: AxiosError | Error) => void;
 class AuthService {
 
     private local: StorageFacade;
-    private session: StorageFacade;
     private source: CancelTokenSource;
+    private version: number;
     private axiosInstance1: AxiosInstance | null;   // includes auth header
     private axiosInstance2: AxiosInstance | null;   // excludes auth header
     private onRequestSuccess: ((config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig>) | null;
@@ -28,8 +28,8 @@ class AuthService {
 
     constructor() {
         this.local = storageUtils.getLocal();
-        this.session = storageUtils.getSession();
         this.source = axios.CancelToken.source();
+        this.version = 1;
         this.axiosInstance1 = null;
         this.axiosInstance2 = null;
         this.onRequestSuccess = null;
@@ -37,7 +37,8 @@ class AuthService {
         this.onResponseError = null;
     }
 
-    public init = ({baseUrl, timeout = 60 * 1000, retries = 3, onUnauthenticated}: {
+    public init = ({version, baseUrl, timeout = 60 * 1000, retries = 3, onUnauthenticated}: {
+        version: number,
         baseUrl: string,
         timeout: number,
         retries: number,
@@ -71,6 +72,7 @@ class AuthService {
             return Promise.reject(err);
         };
 
+        this.version = version;
         this.axiosInstance1 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
         this.axiosInstance2 = this.createConfiguredAxiosInstance(baseUrl, timeout, retries, false);
     }
@@ -113,18 +115,6 @@ class AuthService {
         this.local.clear(keys.authToken);
     }
 
-    public getTemporaryPassword = (): string | null => {
-        return this.session.getStr(keys.tempPassword);
-    }
-
-    public storeTemporaryPassword = (temporaryPassword: string): void => {
-        this.session.setStr(keys.tempPassword, temporaryPassword);
-    }
-
-    public clearTemporaryPassword = (): void => {
-        this.session.clear(keys.tempPassword);
-    }
-
     private recordLogin = (): void => {
         const timestamp: string = Date.now().toString();
         this.local.setStr(keys.loginAt, timestamp);
@@ -141,7 +131,9 @@ class AuthService {
             console.log(`login ${hours.toFixed(2)} hours ago`);
 
             if (!isNaN(hours) && hours >= 24) {
-                this.axiosInstance1!.post("/api/v1/auth/recordLogin", {})
+                const url = `/api/v${this.version}/auth/recordLogin`;
+
+                this.axiosInstance1!.post(url, {})
                 .then(this.recordLogin)
                 .catch(failure);
             }
@@ -156,7 +148,7 @@ class AuthService {
         success: SuccessCallback<LoginList>,
         failure: FailureCallback
     ) => {
-        let url = "/api/v1/auth/listLogins?limit=" + limit;
+        let url = `/api/v${this.version}/auth/listLogins?limit=${limit}`;
 
         if (cursor) {
             url += "&cursor=" + cursor;
@@ -172,7 +164,9 @@ class AuthService {
     }
 
     public getLoggedInUser = (success: SuccessCallback<AuthUser>, failure: FailureCallback): void => {
-        this.axiosInstance1!.get<AuthUser>("/api/v1/auth/user")
+        const url = `/api/v${this.version}/auth/user`;
+
+        this.axiosInstance1!.get<AuthUser>(url)
         .then(response => {
             success(response.data);
         })
@@ -180,7 +174,9 @@ class AuthService {
     }
 
     public findAccounts = (success: SuccessCallback<Account[]>, failure: FailureCallback): void => {
-        this.axiosInstance1!.get("/api/v1/auth/accounts")
+        const url = `/api/v${this.version}/auth/accounts`;
+
+        this.axiosInstance1!.get(url)
         .then(response => {
             const json = response.data;
 
@@ -194,7 +190,9 @@ class AuthService {
         success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.post<void>("/api/v1/auth/welcome", {
+        const url = `/api/v${this.version}/auth/welcome`;
+
+        this.axiosInstance2!.post<void>(url, {
             nonce: nonce,
         })
         .then(response => {
@@ -211,7 +209,9 @@ class AuthService {
         success: SuccessCallback<LoginResponse>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/login", {
+        const url = `/api/v${this.version}/auth/login`;
+
+        this.axiosInstance2!.post<LoginResponse>(url, {
             email: email,
             password: password,
             accountId: accountId,
@@ -229,7 +229,9 @@ class AuthService {
         success: SuccessCallback<LoginResponse>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.post<LoginResponse>("/api/v1/auth/google", {
+        const url = `/api/v${this.version}/auth/google`;
+
+        this.axiosInstance2!.post<LoginResponse>(url, {
             token: token,
             accountId: accountId,
         })
@@ -245,7 +247,9 @@ class AuthService {
         success: SuccessCallback<Profile>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance1!.post("/api/v1/auth/linkGoogle", {
+        const url = `/api/v${this.version}/auth/linkGoogle`;
+
+        this.axiosInstance1!.post(url, {
             token: token,
         })
         .then((response) => {
@@ -260,7 +264,9 @@ class AuthService {
         success: SuccessCallback<Profile>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance1!.put("/api/v1/auth/password", {
+        const url = `/api/v${this.version}/auth/password`;
+
+        this.axiosInstance1!.put(url, {
             existing: existing,
             password: password,
         })
@@ -277,7 +283,9 @@ class AuthService {
         success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.post("/api/v1/auth/forgot", {
+        const url = `/api/v${this.version}/auth/forgot`;
+
+        this.axiosInstance2!.post(url, {
             email: email,
             phone: phone,
             method: method,
@@ -295,7 +303,9 @@ class AuthService {
         success: SuccessCallback<LoginResponse>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance2!.put<LoginResponse>("/api/v1/auth/recover", {
+        const url = `/api/v${this.version}/auth/recover`;
+
+        this.axiosInstance2!.put<LoginResponse>(url, {
             email: email,
             phone: phone,
             code: code,
@@ -312,7 +322,9 @@ class AuthService {
         success: SuccessCallback<void>,
         failure: FailureCallback
     ): void => {
-        this.axiosInstance1!.put<void>("/api/v1/auth/switch", {
+        const url = `/api/v${this.version}/auth/switch`;
+
+        this.axiosInstance1!.put<void>(url, {
             accountId: accountId,
         })
         .then(response => {

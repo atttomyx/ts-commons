@@ -7,25 +7,29 @@ type FailureCallback = (error: AxiosError | Error) => void;
 
 class AccountService {
 
+    private version: number;
     private axiosInstance1: AxiosInstance | null;
     private axiosInstance2: AxiosInstance | null;
     private accountUtils: AccountUtils | null;
     private userUtils: UserUtils | null;
 
     constructor() {
+        this.version = 1;
         this.axiosInstance1 = null;
         this.axiosInstance2 = null;
         this.accountUtils = null;
         this.userUtils = null;
     }
 
-    public init = ({baseUrl, timeout, retries, accountUtils, userUtils}: {
+    public init = ({version, baseUrl, timeout, retries, accountUtils, userUtils}: {
+        version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
         accountUtils: AccountUtils,
         userUtils: UserUtils,
     }): void => {
+        this.version = version;
         this.axiosInstance1 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
         this.axiosInstance2 = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, false);
         this.accountUtils = accountUtils;
@@ -33,7 +37,9 @@ class AccountService {
     }
 
     public loadAccount = (success: SuccessCallback<Account>, failure: FailureCallback) => {
-        this.axiosInstance1!.get("/api/v1/account/")
+        const url = `/api/v${this.version}/account/`;
+
+        this.axiosInstance1!.get(url)
         .then(response => {
             const account = response.data;
 
@@ -44,7 +50,9 @@ class AccountService {
     }
 
     public saveAccount = (account: Partial<Account>, success: SuccessCallback<Account>, failure: FailureCallback) => {
-        this.axiosInstance1!.put("/api/v1/account/", {
+        const url = `/api/v${this.version}/account/`;
+
+        this.axiosInstance1!.put(url, {
             name: account.name,
             website: account.website,
             branding: account.branding,
@@ -61,7 +69,9 @@ class AccountService {
     }
 
     public joinAccount = (join: Join, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
-        this.axiosInstance2!.post("/api/v1/account/join", {
+        const url = `/api/v${this.version}/account/join`;
+
+        this.axiosInstance2!.post(url, {
             user: join.user ? {
                 firstName: join.user.firstName,
                 lastName: join.user.lastName,
@@ -84,7 +94,9 @@ class AccountService {
     };
 
     public joinAdditionalAccount = (code: string, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
-        this.axiosInstance1!.put("/api/v1/account/joinAdditional", {
+        const url = `/api/v${this.version}/account/joinAdditional`;
+
+        this.axiosInstance1!.put(url, {
             code: code,
         })
         .then(response => {

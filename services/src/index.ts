@@ -4,6 +4,7 @@ import type {
     AccountUtils,
     AuthUser,
     Branding,
+    DeliveryType,
     Edge,
     EdgeList,
     Join,
@@ -15,7 +16,13 @@ import type {
     LoginResponse,
     Node,
     NodeList,
+    Notification,
+    NotificationList,
+    NotificationState,
+    NotificationType,
+    Preferences,
     Profile,
+    TopicType,
     Type,
     TypeList,
     User,
@@ -29,6 +36,7 @@ import {typeService} from "./typeService";
 import {cloudinaryService} from "./cloudinaryService";
 import {nodeService} from "./nodeService";
 import {edgeService} from "./edgeService";
+import {notificationService} from "./notificationService";
 
 // auth
 export {AuthUser};
@@ -72,3 +80,13 @@ export {nodeService};
 export {Edge};
 export {EdgeList};
 export {edgeService};
+
+// notifications
+export {DeliveryType};
+export {NotificationState};
+export {Notification};
+export {NotificationList};
+export {NotificationType};
+export {TopicType};
+export {Preferences};
+export {notificationService};

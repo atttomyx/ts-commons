@@ -186,3 +186,51 @@ export interface EdgeList {
     edges: Edge[];
     cursor?: string;
 }
+
+// notifications
+
+export type DeliveryType =
+    | "None"
+    | "Mobile"
+    | "App"
+    | "Email";
+
+export type NotificationState =
+    | "New"
+    | "Read";
+
+export interface Notification {
+    id: string;
+    type: string;
+    mail: boolean;
+    state: NotificationState;
+    title: string;
+    description?: string;
+    gotoUrl?: string;
+    metadata?: Record<string, any>;
+    created: string;
+    updated: string;
+}
+
+export interface NotificationList {
+    notifications: Notification[];
+    cursor?: string;
+}
+
+export interface NotificationType {
+    role: string | null;
+    description: string;
+    delivery: DeliveryType;
+}
+
+export interface TopicType {
+    role: string | null;
+    description: string;
+    subscribed: boolean;
+}
+
+export interface Preferences {
+    messagingToken: string | null;
+    deliveries: Record<string, DeliveryType>;
+    topics: Record<string, boolean>;
+}

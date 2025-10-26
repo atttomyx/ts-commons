@@ -7,17 +7,21 @@ type FailureCallback = (error: AxiosError | Error) => void;
 
 class EdgeService {
 
+    private version: number;
     private axiosInstance: AxiosInstance | null;
 
     constructor() {
+        this.version = 1;
         this.axiosInstance = null;
     }
 
-    public init = ({baseUrl, timeout, retries}: {
+    public init = ({version, baseUrl, timeout, retries}: {
+        version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
     }): void => {
+        this.version = version;
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
@@ -27,7 +31,7 @@ class EdgeService {
         success: SuccessCallback<EdgeList>,
         failure: FailureCallback
     ): void => {
-        let url = `/api/v1/edge/list?limit=${limit}`;
+        let url = `/api/v${this.version}/edge/list?limit=${limit}`;
 
         if (cursor) {
             url += `&cursor=${cursor}`;
@@ -47,7 +51,7 @@ class EdgeService {
         success: SuccessCallback<Edge>,
         failure: FailureCallback
     ): void => {
-        const url = "/api/v1/edge/";
+        const url = `/api/v${this.version}/edge/`;
 
         this.axiosInstance!.post<Edge>(url, {
             sourceNodeId: edge.sourceNodeId,
@@ -70,7 +74,7 @@ class EdgeService {
         success: SuccessCallback<Edge>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/edge/${edgeId}/`;
+        const url = `/api/v${this.version}/edge/${edgeId}/`;
 
         this.axiosInstance!.put<Edge>(url, {
             sourceNodeId: edge.sourceNodeId,
@@ -92,7 +96,7 @@ class EdgeService {
         success: SuccessCallback<string>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/edge/${edgeId}/`;
+        const url = `/api/v${this.version}/edge/${edgeId}/`;
 
         this.axiosInstance!.delete(url)
         .then(() => {

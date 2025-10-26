@@ -1,82 +1,37 @@
-import {authService} from "@milesoft/typescript-services";
 import {objectUtils, stringUtils} from "@milesoft/typescript-utils";
 import {type AxiosError, type AxiosInstance} from "axios";
+import type {DeliveryType, NotificationList, NotificationType, Preferences, TopicType} from "./types";
+import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error) => void;
-
-export interface Notification {
-    id: string;
-    type: string;
-    mail: boolean;
-    state: NotificationState;
-    title: string;
-    description?: string;
-    gotoUrl?: string;
-    metadata?: Record<string, any>;
-    created: string;
-    updated: string;
-}
-
-export interface NotificationList {
-    notifications: Notification[];
-    cursor?: string;
-}
-
-export type DeliveryType =
-    | "None"
-    | "Mobile"
-    | "App"
-    | "Email";
-
-export type NotificationState =
-    | "New"
-    | "Read";
-
-export interface NotificationType {
-    role: string | null;
-    description: string;
-    delivery: DeliveryType;
-}
-
-export interface TopicType {
-    role: string | null;
-    description: string;
-    subscribed: boolean;
-}
-
-export interface Preferences {
-    messagingToken: string | null;
-    deliveries: Record<string, DeliveryType>;
-    topics: Record<string, boolean>;
-}
 
 class NotificationService {
 
     private version: number;
     private axiosInstance: AxiosInstance | null;
-    private notificationTypes: Record<string, NotificationType> | null;
-    private topicTypes: Record<string, TopicType> | null;
+    private notificationTypes?: Record<string, NotificationType>;
+    private topicTypes?: Record<string, TopicType>;
 
     constructor() {
         this.version = 1;
         this.axiosInstance = null;
-        this.notificationTypes = null;
-        this.topicTypes = null;
+        this.notificationTypes = undefined;
+        this.topicTypes = undefined;
     }
 
-    public init = ({version, baseUrl, timeout, retries, notificationTypes, topics}: {
+    public init = ({version, baseUrl, timeout, retries, notificationTypes, topicTypes}: {
         version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
         notificationTypes?: Record<string, NotificationType>,
-        topics?: Record<string, TopicType>,
+        topicTypes?: Record<string, TopicType>,
     }): void => {
         this.version = version;
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
         this.notificationTypes = notificationTypes;
-        this.topicTypes = topics;
+        this.topicTypes = topicTypes;
     }
 
     public listNotifications = (
@@ -174,9 +129,9 @@ class NotificationService {
     }
 
     private sanitizeDeliveries = (deliveries: Record<string, DeliveryType>): Record<string, DeliveryType> => {
-        const sanitized = {};
+        const sanitized = {} as Record<string, DeliveryType>;
 
-        if (deliveries) {
+        if (deliveries && this.notificationTypes) {
             Object.keys(this.notificationTypes).forEach(type => {
                 const delivery: DeliveryType = deliveries[type];
 
@@ -190,9 +145,9 @@ class NotificationService {
     }
 
     private sanitizeTopics = (topics: Record<string, boolean>): Record<string, boolean> => {
-        const sanitized = {};
+        const sanitized = {} as Record<string, boolean>;
 
-        if (topics) {
+        if (topics && this.topicTypes) {
             Object.keys(this.topicTypes).forEach(type => {
                 const subscribed: boolean = topics[type];
 

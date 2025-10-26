@@ -7,17 +7,21 @@ type FailureCallback = (error: AxiosError | Error) => void;
 
 class NodeService {
 
+    private version: number;
     private axiosInstance: AxiosInstance | null;
 
     constructor() {
+        this.version = 1;
         this.axiosInstance = null;
     }
 
-    public init = ({baseUrl, timeout, retries}: {
+    public init = ({version, baseUrl, timeout, retries}: {
+        version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
     }): void => {
+        this.version = version;
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
@@ -27,7 +31,7 @@ class NodeService {
         success: SuccessCallback<NodeList>,
         failure: FailureCallback
     ): void => {
-        let url = `/api/v1/node/list?limit=${limit}`;
+        let url = `/api/v${this.version}/node/list?limit=${limit}`;
 
         if (cursor) {
             url += `&cursor=${cursor}`;
@@ -47,7 +51,7 @@ class NodeService {
         success: SuccessCallback<Node>,
         failure: FailureCallback
     ): void => {
-        const url = "/api/v1/node/";
+        const url = `/api/v${this.version}/node/`;
 
         this.axiosInstance!.post<Node>(url, {
             imageUrl: node.imageUrl,
@@ -76,7 +80,7 @@ class NodeService {
         success: SuccessCallback<Node>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/node/${nodeId}/`;
+        const url = `/api/v${this.version}/node/${nodeId}/`;
 
         this.axiosInstance!.put<Node>(url, {
             imageUrl: node.imageUrl,
@@ -104,7 +108,7 @@ class NodeService {
         success: SuccessCallback<string>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/node/${nodeId}/`;
+        const url = `/api/v${this.version}/node/${nodeId}/`;
 
         this.axiosInstance!.delete(url)
         .then(() => {

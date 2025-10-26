@@ -7,26 +7,32 @@ type FailureCallback = (error: AxiosError | Error) => void;
 
 class UserService {
 
+    private version: number;
     private axiosInstance: AxiosInstance | null;
     private userUtils: UserUtils | null;
 
     constructor() {
+        this.version = 1;
         this.axiosInstance = null;
         this.userUtils = null;
     }
 
-    public init = ({baseUrl, timeout, retries, userUtils}: {
+    public init = ({version, baseUrl, timeout, retries, userUtils}: {
+        version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
         userUtils: UserUtils
     }): void => {
+        this.version = version;
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
         this.userUtils = userUtils;
     }
 
     public loadProfile = (success: SuccessCallback<Profile>, failure: FailureCallback) => {
-        this.axiosInstance!.get("/api/v1/profile/")
+        const url = `/api/v${this.version}/profile/`;
+
+        this.axiosInstance!.get(url)
         .then(response => {
             const profile = response.data;
 
@@ -37,7 +43,9 @@ class UserService {
     }
 
     public saveProfile = (profile: Profile, success: SuccessCallback<Profile>, failure: FailureCallback) => {
-        this.axiosInstance!.put("/api/v1/profile/", {
+        const url = `/api/v${this.version}/profile/`;
+
+        this.axiosInstance!.put(url, {
             firstName: profile.firstName,
             lastName: profile.lastName,
             email: profile.email,
@@ -60,7 +68,7 @@ class UserService {
         success: SuccessCallback<UserList>,
         failure: FailureCallback
     ): void => {
-        let url = `/api/v1/user/list?limit=${limit}`;
+        let url = `/api/v${this.version}/user/list?limit=${limit}`;
 
         if (cursor) {
             url += `&cursor=${cursor}`;
@@ -83,7 +91,7 @@ class UserService {
         success: SuccessCallback<UserList>,
         failure: FailureCallback
     ) => {
-        let url = "/api/v1/user/removed?limit=" + limit;
+        let url = `/api/v${this.version}/user/removed?limit=` + limit;
 
         if (cursor) {
             url += "&cursor=" + cursor;
@@ -105,7 +113,7 @@ class UserService {
         success: SuccessCallback<User>,
         failure: FailureCallback
     ): void => {
-        const url = "/api/v1/user/";
+        const url = `/api/v${this.version}/user/`;
 
         this.axiosInstance!.post<User>(url, {
             firstName: user.firstName,
@@ -131,7 +139,7 @@ class UserService {
         success: SuccessCallback<User>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/user/${userId}/`;
+        const url = `/api/v${this.version}/user/${userId}/`;
 
         this.axiosInstance!.put<User>(url, {
             firstName: user.firstName,
@@ -157,7 +165,7 @@ class UserService {
         success: SuccessCallback<string>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/user/${userId}/`;
+        const url = `/api/v${this.version}/user/${userId}/`;
 
         this.axiosInstance!.delete(url)
         .then(() => {

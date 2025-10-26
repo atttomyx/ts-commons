@@ -3,9 +3,11 @@
 [![npm version](https://badge.fury.io/js/%40milesoft%2Ftypescript-services.svg)](https://www.npmjs.com/package/@milesoft/typescript-services)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**A collection of client-side service classes for interacting with Milesoft's standardized REST APIs. This package centralizes HTTP configuration, authentication, and error handling.**
+**A collection of client-side service classes for interacting with Milesoft's standardized REST APIs. This package
+centralizes HTTP configuration, authentication, and error handling.**
 
-This library provides ready-to-use, initialized service objects (`authService`, `userService`, etc.) that abstract away network logic, allowing application code to focus purely on data flow.
+This library provides ready-to-use, initialized service objects (`authService`, `userService`, etc.) that abstract away
+network logic, allowing application code to focus purely on data flow.
 
 -----
 
@@ -13,27 +15,29 @@ This library provides ready-to-use, initialized service objects (`authService`, 
 
 The package exports singleton instances of service classes, each managing API calls for a specific domain:
 
-| Service Export | Domain | Key Responsibilities |
-| :--- | :--- | :--- |
-| **`authService`** | Authentication and Authorization | Initializes and manages `axios` instances (including one *without* auth headers for login/recovery). Handles JWT storage, request cancellation, and unauthenticated response interceptors. |
-| **`userService`** | User and Profile Management | Provides CRUD operations (`list`, `create`, `save`, `delete`) for user entities, and dedicated methods for profile management. Requires an external `UserUtils` object for entity sanitation. |
-| **`accountService`** | Account Management and Joining | Provides logic for loading, saving, and joining accounts. Requires an external `AccountUtils` object for entity sanitation. |
-| **`cloudinaryService`** | Image Uploads | Dedicated service for uploading user and account images to the configured Cloudinary instance. |
-| **`typeService`** | Generic Type/Data Management | Provides standardized CRUD operations for general data types/entities within the system. |
-| **`nodeService`** | Node/Entity Management | Provides CRUD and list operations for generic graph nodes, including contact information and metadata. |
-| **`edgeService`** | Edge/Relationship Management | Provides CRUD and list operations for relationships (edges) between nodes. |
+| Service Export            | Domain                           | Key Responsibilities                                                                                                                                                                          |
+|:--------------------------|:---------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`authService`**         | Authentication and Authorization | Initializes and manages `axios` instances (including one *without* auth headers for login/recovery). Handles JWT storage, request cancellation, and unauthenticated response interceptors.    |
+| **`accountService`**      | Account Management and Joining   | Provides logic for loading, saving, and joining accounts. Requires an external `AccountUtils` object for entity sanitation.                                                                   |
+| **`userService`**         | User and Profile Management      | Provides CRUD operations (`list`, `create`, `save`, `delete`) for user entities, and dedicated methods for profile management. Requires an external `UserUtils` object for entity sanitation. |
+| **`typeService`**         | User Typ Management              | Provides standardized CRUD operations for custom user types and permissions.                                                                                                                  |
+| **`notificationService`** | Notifications and Preferences    | Provides methods for listing, marking, and deleting user notifications. Manages user preference settings for different notification types and topics.                                         |
+| **`nodeService`**         | Node/Entity Management           | Provides CRUD and list operations for generic graph nodes, including contact information and metadata.                                                                                        |
+| **`edgeService`**         | Edge/Relationship Management     | Provides CRUD and list operations for relationships (edges) between nodes.                                                                                                                    |
+| **`cloudinaryService`**   | Image Uploads                    | Dedicated service for uploading user and account images to the configured Cloudinary instance.                                                                                                |
 
 -----
 
 ## ⚙️ Peer Dependencies
 
-This library is designed to work within the Milesoft ecosystem and relies on the following packages (which you must install alongside this one):
+This library is designed to work within the Milesoft ecosystem and relies on the following packages (which you must
+install alongside this one):
 
-| Package | Purpose |
-| :--- | :--- |
-| `@milesoft/typescript-constants` | Provides keys for JWT and temporary password storage. |
-| `@milesoft/typescript-utils` | Provides `storageUtils` for browser storage and `stringUtils` for JWT checks. |
-| `axios` & `axios-retry` | The underlying HTTP client and its robust retry logic. |
+| Package                          | Purpose                                                                       |
+|:---------------------------------|:------------------------------------------------------------------------------|
+| `@milesoft/typescript-constants` | Provides keys for JWT and temporary password storage.                         |
+| `@milesoft/typescript-utils`     | Provides `storageUtils` for browser storage and `stringUtils` for JWT checks. |
+| `axios` & `axios-retry`          | The underlying HTTP client and its robust retry logic.                        |
 
 -----
 
@@ -55,12 +59,13 @@ npm install @milesoft/typescript-constants @milesoft/typescript-utils axios axio
 
 ### 1\. Initialization (Required)
 
-Before making any requests, the service objects **must be initialized** to configure the base URL, timeouts, and error handling. It's recommended to do this once at application startup.
+Before making any requests, the service objects **must be initialized** to configure the base URL, timeouts, and error
+handling. It's recommended to do this once at application startup.
 
 **Note:** `userService` and other services rely on `authService` for its configured `axios` instance.
 
 ```typescript
-import { authService, userService, accountService, cloudinaryService } from "@milesoft/typescript-services";
+import {authService, userService, accountService, cloudinaryService} from "@milesoft/typescript-services";
 
 // Define unauthenticated handler
 const handleUnauthenticated = () => {
@@ -71,12 +76,15 @@ const handleUnauthenticated = () => {
 
 // Required utilities for data formatting
 const myAppUserUtils = {
-    sanitizeUser: (user) => { /* ... */ },
-    sanitizeProfile: (profile) => { /* ... */ },
+    sanitizeUser: (user) => { /* ... */
+    },
+    sanitizeProfile: (profile) => { /* ... */
+    },
 };
 
 const myAppAccountUtils = {
-    sanitizeAccount: (account) => { /* ... */ },
+    sanitizeAccount: (account) => { /* ... */
+    },
 };
 
 // 1. Initialize Auth Service (Must be first)
@@ -103,8 +111,16 @@ typeService.init({
     baseUrl: 'https://api.yourdomain.com',
 });
 
-cloudinaryService.init({
-    cloudinaryId: 'your-cloudinary-cloud-name', // e.g., 'milesoft'
+notificationService.init({
+    baseUrl: 'https://api.yourdomain.com',
+    notificationTypes: {
+        'new_user': { role: 'ROLE_ADMIN', description: 'Someone signed up', delivery: 'App' },
+        // ... other types
+    },
+    topicTypes: {
+        'announcement': { role: 'ROLE_USER', description: 'Something interesting happened', delivery: 'App' },
+        // ... other topics
+    }
 });
 
 nodeService.init({
@@ -114,6 +130,10 @@ nodeService.init({
 edgeService.init({
     baseUrl: 'https://api.yourdomain.com',
 });
+
+cloudinaryService.init({
+    cloudinaryId: 'your-cloudinary-cloud-name', // e.g., 'milesoft'
+});
 ```
 
 ### 2\. Making Requests
@@ -121,7 +141,7 @@ edgeService.init({
 All service methods utilize standardized success and failure callback patterns.
 
 ```typescript
-import { authService, userService, type Type } from "@milesoft/typescript-services";
+import {authService, userService, type Type} from "@milesoft/typescript-services";
 
 // --- Example: Getting the logged-in user ---
 authService.getLoggedInUser(
@@ -150,18 +170,14 @@ typeService.createType(
     }
 );
 
-// --- Example: Uploading an image ---
-const imageFile: File = new File(["..."], "logo.png");  // Assume you have a file object
-const accountId: string = "a1b2c3d4e5f6";
-
-cloudinaryService.uploadAccountImage(
-    accountId,
-    imageFile,
-    (secureUrl) => {
-        console.log("Image uploaded to:", secureUrl);
+// --- Example: Marking notifications as read ---
+notificationService.markAsRead(
+    ["id-1", "id-2"],
+    (ids) => {
+        console.log(`Successfully marked ${ids.length} notifications as read.`);
     },
     (error) => {
-        console.error("Image upload failed:", error);
+        console.error("Failed to mark notifications as read:", error);
     }
 );
 
@@ -197,6 +213,21 @@ edgeService.createEdge(
     },
     (error) => {
         console.error("Edge creation failed:", error);
+    }
+);
+
+// --- Example: Uploading an image ---
+const imageFile: File = new File(["..."], "logo.png");  // Assume you have a file object
+const accountId: string = "a1b2c3d4e5f6";
+
+cloudinaryService.uploadAccountImage(
+    accountId,
+    imageFile,
+    (secureUrl) => {
+        console.log("Image uploaded to:", secureUrl);
+    },
+    (error) => {
+        console.error("Image upload failed:", error);
     }
 );
 ```

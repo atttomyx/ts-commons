@@ -7,17 +7,21 @@ type FailureCallback = (error: AxiosError | Error) => void;
 
 class TypeService {
 
+    private version: number;
     private axiosInstance: AxiosInstance | null;
 
     constructor() {
+        this.version = 1;
         this.axiosInstance = null;
     }
 
-    public init = ({baseUrl, timeout, retries}: {
+    public init = ({version, baseUrl, timeout, retries}: {
+        version: number,
         baseUrl: string,
         timeout?: number,
         retries?: number,
     }): void => {
+        this.version = version;
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
@@ -27,7 +31,7 @@ class TypeService {
         success: SuccessCallback<TypeList>,
         failure: FailureCallback
     ): void => {
-        let url = `/api/v1/type/list?limit=${limit}`;
+        let url = `/api/v${this.version}/type/list?limit=${limit}`;
 
         if (cursor) {
             url += `&cursor=${cursor}`;
@@ -47,7 +51,7 @@ class TypeService {
         success: SuccessCallback<Type>,
         failure: FailureCallback
     ): void => {
-        const url = "/api/v1/type/";
+        const url = `/api/v${this.version}/type/`;
 
         this.axiosInstance!.post<Type>(url, {
             title: type.title,
@@ -68,7 +72,7 @@ class TypeService {
         success: SuccessCallback<Type>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/type/${typeId}/`;
+        const url = `/api/v${this.version}/type/${typeId}/`;
 
         this.axiosInstance!.put<Type>(url, {
             title: type.title,
@@ -88,7 +92,7 @@ class TypeService {
         success: SuccessCallback<string>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v1/type/${typeId}/`;
+        const url = `/api/v${this.version}/type/${typeId}/`;
 
         this.axiosInstance!.delete(url)
         .then(() => {
