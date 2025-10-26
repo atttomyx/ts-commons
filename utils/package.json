@@ -1,6 +1,6 @@
 {
   "name": "@milesoft/typescript-utils",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Reusable TypeScript utility functions for array entity management, error handling, storage, and more.",
   "license": "MIT",
   "author": "Milesoft",
@@ -21,8 +21,14 @@
     "build": "tsc",
     "publish:public": "yarn publish --access public"
   },
+  "peerDependencies": {
+    "@milesoft/typescript-constants": "^2.0.0",
+    "react-device-detect": "^2.2.3"
+  },
   "devDependencies": {
+    "@milesoft/typescript-constants": "^2.0.0",
     "@types/node": "^24.6.2",
+    "react-device-detect": "^2.2.3",
     "typescript": "^5.9.3"
   },
   "packageManager": "yarn@3.6.4"
