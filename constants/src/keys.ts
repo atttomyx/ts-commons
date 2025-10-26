@@ -1,5 +1,5 @@
 export const keys = {
     authToken: "auth_token",
-    tempPassword: "temp_password",
     loginAt: "login_at",
+    requestedReviewAt: "requested_review_at",
 };
