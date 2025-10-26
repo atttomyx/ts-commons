@@ -1,31 +1,31 @@
-import {objectUtils, type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescript-utils";
 import {isAndroid} from "react-device-detect";
-
-import {keys} from "@/utils/keys.ts";
-import {time} from "@/utils/time.ts";
+import {type StorageFacade, storageUtils} from "./storageUtils";
+import {stringUtils} from "./stringUtils";
+import {objectUtils} from "./objectUtils";
+import {keys, time} from "@milesoft/typescript-constants";
 
 class MobileUtils {
 
-    private appName: string;
+    private appName?: string;
     private local: StorageFacade;
 
-    private appStateObservers: { [x: string]: (appState: string) => void; };
-    private appVersionObservers: { [x: string]: (appVersion: string) => void; };
-    private idForVendorObservers: { [x: string]: (idForVendor: string) => void; };
-    private messagingTokenObservers: { [x: string]: (messagingToken: string) => void; };
-    private notificationObservers: { [x: string]: (type: string, body: string, payload: any) => void; };
-    private deepLinkObservers: { [x: string]: (deepLink: string) => void; };
+    private appStateObservers?: { [x: string]: (appState: string) => void; };
+    private appVersionObservers?: { [x: string]: (appVersion: string) => void; };
+    private idForVendorObservers?: { [x: string]: (idForVendor: string) => void; };
+    private messagingTokenObservers?: { [x: string]: (messagingToken: string) => void; };
+    private notificationObservers?: { [x: string]: (type: string, body: string, payload: any) => void; };
+    private deepLinkObservers?: { [x: string]: (deepLink: string) => void; };
 
     constructor() {
-        this.appName = null;
+        this.appName = undefined;
         this.local = storageUtils.getLocal();
 
-        this.appStateObservers = null;
-        this.appVersionObservers = null;
-        this.idForVendorObservers = null;
-        this.messagingTokenObservers = null;
-        this.notificationObservers = null;
-        this.deepLinkObservers = null;
+        this.appStateObservers = undefined;
+        this.appVersionObservers = undefined;
+        this.idForVendorObservers = undefined;
+        this.messagingTokenObservers = undefined;
+        this.notificationObservers = undefined;
+        this.deepLinkObservers = undefined;
     }
 
     public init = ({appName}: {
@@ -49,14 +49,14 @@ class MobileUtils {
     }
 
     public destroy = (): void => {
-        this.appName = null;
+        this.appName = undefined;
 
-        this.appStateObservers = null;
-        this.appVersionObservers = null;
-        this.idForVendorObservers = null;
-        this.messagingTokenObservers = null;
-        this.notificationObservers = null;
-        this.deepLinkObservers = null;
+        this.appStateObservers = undefined;
+        this.appVersionObservers = undefined;
+        this.idForVendorObservers = undefined;
+        this.messagingTokenObservers = undefined;
+        this.notificationObservers = undefined;
+        this.deepLinkObservers = undefined;
 
         if (isAndroid) {
             document.removeEventListener("message", this.handleMessage);
@@ -161,37 +161,37 @@ class MobileUtils {
         if (stringUtils.contains(data, this.appName)) {
             const json = JSON.parse(data);
 
-            if (json.appState) {
-                Object.keys(this.appStateObservers).forEach(key => this.appStateObservers[key](json.appState));
+            if (json.appState && this.appStateObservers) {
+                Object.keys(this.appStateObservers).forEach(key => this.appStateObservers![key](json.appState));
 
-            } else if (json.appVersion) {
+            } else if (json.appVersion && this.appVersionObservers) {
                 const version: string = json.appVersion;
 
-                Object.keys(this.appVersionObservers).forEach(key => this.appVersionObservers[key](version));
+                Object.keys(this.appVersionObservers).forEach(key => this.appVersionObservers![key](version));
 
-            } else if (json.idForVendor) {
+            } else if (json.idForVendor && this.idForVendorObservers) {
                 const idForVendor: string = json.idForVendor;
 
-                Object.keys(this.idForVendorObservers).forEach(key => this.idForVendorObservers[key](idForVendor));
+                Object.keys(this.idForVendorObservers).forEach(key => this.idForVendorObservers![key](idForVendor));
 
-            } else if (json.messagingToken) {
+            } else if (json.messagingToken && this.messagingTokenObservers) {
                 const messagingToken: string = json.messagingToken;
 
-                Object.keys(this.messagingTokenObservers).forEach(key => this.messagingTokenObservers[key](messagingToken));
+                Object.keys(this.messagingTokenObservers).forEach(key => this.messagingTokenObservers![key](messagingToken));
 
-            } else if (json.notification) {
+            } else if (json.notification && this.notificationObservers) {
                 const type: string = json.notification.type;
                 const body: string = json.notification.body;
                 const payload: any = json.notification.payload || {};
 
                 if (type) {
-                    Object.keys(this.notificationObservers).forEach(key =>this. notificationObservers[key](type, body, payload));
+                    Object.keys(this.notificationObservers).forEach(key => this.notificationObservers![key](type, body, payload));
                 }
 
-            } else if (json.deepLink) {
+            } else if (json.deepLink && this.deepLinkObservers) {
                 const deepLink: string = json.deepLink;
 
-                Object.keys(this.deepLinkObservers).forEach(key => this.deepLinkObservers[key](deepLink));
+                Object.keys(this.deepLinkObservers).forEach(key => this.deepLinkObservers![key](deepLink));
             }
         }
     }
@@ -267,7 +267,7 @@ class MobileUtils {
         });
     }
 
-    public parseDeepLinkRelativeUrl = (pathDeepLink: string, url: string): string => {
+    public parseDeepLinkRelativeUrl = (pathDeepLink: string, url: string): string | null => {
         const index: number = url ? url.indexOf(pathDeepLink) : -1;
 
         return index > -1 ? url.substring(index + pathDeepLink.length) : null;
