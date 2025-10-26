@@ -1,6 +1,6 @@
 {
   "name": "@milesoft/typescript-services",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Client-side service classes for Milesoft REST APIs, centralizing Axios configuration, authentication, and error handling.",
   "license": "MIT",
   "author": "Milesoft",
@@ -22,14 +22,14 @@
     "publish:public": "yarn publish --access public"
   },
   "peerDependencies": {
-    "@milesoft/typescript-constants": "^1.0.0",
-    "@milesoft/typescript-utils": "^1.0.0",
+    "@milesoft/typescript-constants": "^2.0.0",
+    "@milesoft/typescript-utils": "^2.0.0",
     "axios": "^1.12.2",
     "axios-retry": "^4.5.0"
   },
   "devDependencies": {
-    "@milesoft/typescript-constants": "^1.0.0",
-    "@milesoft/typescript-utils": "^1.0.0",
+    "@milesoft/typescript-constants": "^2.0.0",
+    "@milesoft/typescript-utils": "^2.0.0",
     "@types/node": "^24.6.2",
     "axios": "^1.12.2",
     "axios-retry": "^4.5.0",
