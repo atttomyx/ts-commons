@@ -95,6 +95,20 @@ class ArrayUtils {
         return entities;
     }
 
+    public syncDeletedEntities = (array: any[], entityIds: string[]): any[] => {
+        let entities: any[] = [];
+
+        if (array) {
+            array.forEach((existing) => {
+                if (!this.contains(entityIds, existing.id)) {
+                    this.addTo(entities, existing);
+                }
+            });
+        }
+
+        return entities;
+    }
+
     public syncDeletedEntity = (array: any[], entityId: string): any[] => {
         let entities: any[] = [];
 
