@@ -40,7 +40,7 @@ class NotificationService {
         success: SuccessCallback<NotificationList>,
         failure: FailureCallback
     ): void => {
-        let url = `/api/v${this.version}/type/list?limit=${limit}`;
+        let url = `/api/v${this.version}/notification/list?limit=${limit}`;
 
         if (cursor) {
             url += `&cursor=${cursor}`;
