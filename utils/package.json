@@ -1,6 +1,6 @@
 {
   "name": "@milesoft/typescript-utils",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Reusable TypeScript utility functions for array entity management, error handling, storage, and more.",
   "license": "MIT",
   "author": "Milesoft",
