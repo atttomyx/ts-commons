@@ -24,6 +24,7 @@ The package exports singleton instances of service classes, each managing API ca
 | **`notificationService`** | Notifications and Preferences    | Provides methods for listing, marking, and deleting user notifications. Manages user preference settings for different notification types and topics.                                         |
 | **`nodeService`**         | Node/Entity Management           | Provides CRUD and list operations for generic graph nodes, including contact information and metadata.                                                                                        |
 | **`edgeService`**         | Edge/Relationship Management     | Provides CRUD and list operations for relationships (edges) between nodes.                                                                                                                    |
+| **`oauthService`**        | OAuth integrations               | Provides CRUD operations for OAuth integrations and manages tokens (load, save, delete) for connected third-party services.                                                                   |
 | **`cloudinaryService`**   | Image Uploads                    | Dedicated service for uploading user and account images to the configured Cloudinary instance.                                                                                                |
 
 -----
@@ -114,11 +115,11 @@ typeService.init({
 notificationService.init({
     baseUrl: 'https://api.yourdomain.com',
     notificationTypes: {
-        'new_user': { role: 'ROLE_ADMIN', description: 'Someone signed up', delivery: 'App' },
+        'new_user': {role: 'ROLE_ADMIN', description: 'Someone signed up', delivery: 'App'},
         // ... other types
     },
     topicTypes: {
-        'announcement': { role: 'ROLE_USER', description: 'Something interesting happened', delivery: 'App' },
+        'announcement': {role: 'ROLE_USER', description: 'Something interesting happened', delivery: 'App'},
         // ... other topics
     }
 });
@@ -128,6 +129,10 @@ nodeService.init({
 });
 
 edgeService.init({
+    baseUrl: 'https://api.yourdomain.com',
+});
+
+oauthService.init({
     baseUrl: 'https://api.yourdomain.com',
 });
 
@@ -141,8 +146,6 @@ cloudinaryService.init({
 All service methods utilize standardized success and failure callback patterns.
 
 ```typescript
-import {authService, userService, type Type} from "@milesoft/typescript-services";
-
 // --- Example: Getting the logged-in user ---
 authService.getLoggedInUser(
     (user) => {
@@ -213,6 +216,31 @@ edgeService.createEdge(
     },
     (error) => {
         console.error("Edge creation failed:", error);
+    }
+);
+
+// --- Example: Listing available OAuth integrations ---
+oauthService.listIntegrations(
+    null, // No cursor (first page)
+    10,
+    (integrationList: OauthIntegrationList) => {
+        console.log(`Found ${integrationList.integrations.length} integrations.`);
+    },
+    (error) => {
+        console.error("Failed to list integrations:", error);
+    }
+);
+
+// --- Example: Saving tokens after a successful OAuth flow ---
+oauthService.saveTokens(
+    "slack-integration-id",
+    "authorization-code-from-url",
+    { installationId: "i-12345" }, // Optional metadata
+    () => {
+        console.log("Tokens saved successfully.");
+    },
+    (error) => {
+        console.error("Failed to save tokens:", error);
     }
 );
 

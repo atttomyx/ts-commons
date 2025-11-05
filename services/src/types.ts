@@ -234,3 +234,35 @@ export interface Preferences {
     deliveries: Record<string, DeliveryType>;
     topics: Record<string, boolean>;
 }
+
+// oauth
+
+export interface OauthIntegration {
+    id: string;
+    title: string;
+    authUrl: string;
+    tokenUrl: string;
+    redirectUrl: string;
+    clientId: string;
+    scope: string;
+    created: string;
+    updated: string;
+}
+
+export interface OauthIntegrationList {
+    integrations: OauthIntegration[];
+    cursor?: string;
+}
+
+export interface OauthTokens {
+    integrationId: string;
+    accessToken: string;
+    expiresAt: string;
+    created: string;
+    updated: string;
+    metadata?: Record<string, any>;
+}
+
+export interface OptionalOauthTokens {
+    tokens?: OauthTokens;
+}

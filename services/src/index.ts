@@ -37,6 +37,7 @@ import {cloudinaryService} from "./cloudinaryService";
 import {nodeService} from "./nodeService";
 import {edgeService} from "./edgeService";
 import {notificationService} from "./notificationService";
+import {oauthService} from "./oauthService";
 
 // auth
 export {AuthUser};
@@ -90,3 +91,10 @@ export {NotificationType};
 export {TopicType};
 export {Preferences};
 export {notificationService};
+
+// oauth
+export {type OauthIntegration} from "./types";
+export {type OauthIntegrationList} from "./types";
+export {type OauthTokens} from "./types";
+export {type OptionalOauthTokens} from "./types";
+export {oauthService};
