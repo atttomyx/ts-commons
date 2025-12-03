@@ -7,6 +7,7 @@ import type {
     DeliveryType,
     Edge,
     EdgeList,
+    ImageType,
     Join,
     JoinUser,
     LabeledAddress,
@@ -68,6 +69,7 @@ export {TypeList};
 export {typeService};
 
 // cloudinary
+export {ImageType};
 export {cloudinaryService};
 
 // nodes

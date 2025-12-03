@@ -266,3 +266,10 @@ export interface OauthTokens {
 export interface OptionalOauthTokens {
     tokens?: OauthTokens;
 }
+
+// cloudinary
+
+export interface ImageType {
+    preset: string;
+    prefix: string;
+}
