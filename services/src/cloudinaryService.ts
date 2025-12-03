@@ -44,7 +44,7 @@ class CloudinaryService {
 
         if (imageTypes) {
             imageTypes.forEach(type => {
-                this.imageTypes[type.prefix] = type;
+                this.imageTypes[type.preset] = type;
             })
         }
     }
