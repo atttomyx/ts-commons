@@ -21,8 +21,14 @@ import type {
     NotificationList,
     NotificationState,
     NotificationType,
+    OauthIntegration,
+    OauthIntegrationList,
+    OauthTokens,
+    OptionalOauthTokens,
     Preferences,
     Profile,
+    Template,
+    TemplateList,
     TopicType,
     Type,
     TypeList,
@@ -39,6 +45,7 @@ import {nodeService} from "./nodeService";
 import {edgeService} from "./edgeService";
 import {notificationService} from "./notificationService";
 import {oauthService} from "./oauthService";
+import {templateService} from "./templateService";
 
 // auth
 export {AuthUser};
@@ -95,8 +102,13 @@ export {Preferences};
 export {notificationService};
 
 // oauth
-export {type OauthIntegration} from "./types";
-export {type OauthIntegrationList} from "./types";
-export {type OauthTokens} from "./types";
-export {type OptionalOauthTokens} from "./types";
+export {OauthIntegration};
+export {OauthIntegrationList};
+export {OauthTokens};
+export {OptionalOauthTokens};
 export {oauthService};
+
+// templates
+export {Template};
+export {TemplateList};
+export {templateService};

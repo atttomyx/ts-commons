@@ -273,3 +273,20 @@ export interface ImageType {
     preset: string;
     prefix: string;
 }
+
+// templates
+
+export interface Template {
+    id: string;
+    name: string;
+    html: string;
+    order: number;
+    metadata?: Record<string, any>;
+    created: string;
+    updated: string;
+}
+
+export interface TemplateList {
+    templates: Template[];
+    cursor?: string;
+}

@@ -26,6 +26,7 @@ The package exports singleton instances of service classes, each managing API ca
 | **`edgeService`**         | Edge/Relationship Management     | Provides CRUD and list operations for relationships (edges) between nodes.                                                                                                                    |
 | **`oauthService`**        | OAuth integrations               | Provides CRUD operations for OAuth integrations and manages tokens (load, save, delete) for connected third-party services.                                                                   |
 | **`cloudinaryService`**   | Image Uploads                    | Dedicated service for uploading user and account images to the configured Cloudinary instance.                                                                                                |
+| **`templateService`**     | Template Management              | Provides CRUD operations for managing templates.                                                                                                                                              |
 
 -----
 
@@ -66,7 +67,7 @@ handling. It's recommended to do this once at application startup.
 **Note:** `userService` and other services rely on `authService` for its configured `axios` instance.
 
 ```typescript
-import {authService, userService, accountService, cloudinaryService} from "@milesoft/typescript-services";
+import {authService, userService, accountService, cloudinaryService, templateService} from "@milesoft/typescript-services";
 
 // Define unauthenticated handler
 const handleUnauthenticated = () => {
@@ -138,6 +139,10 @@ oauthService.init({
 
 cloudinaryService.init({
     cloudinaryId: 'your-cloudinary-cloud-name', // e.g., 'milesoft'
+});
+
+templateService.init({
+    baseUrl: 'https://api.yourdomain.com',
 });
 ```
 
@@ -256,6 +261,22 @@ cloudinaryService.uploadAccountImage(
     },
     (error) => {
         console.error("Image upload failed:", error);
+    }
+);
+
+// --- Example: Creating a new Template ---
+const newTemplateData: Partial<Template> = {
+    title: "New Template",
+    body: "The content of the template.",
+};
+
+templateService.createTemplate(
+    newTemplateData,
+    (createdTemplate) => {
+        console.log("Template created with ID:", createdTemplate.id);
+    },
+    (error) => {
+        console.error("Template creation failed:", error);
     }
 );
 ```
