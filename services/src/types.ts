@@ -279,7 +279,8 @@ export interface ImageType {
 export interface Template {
     id: string;
     name: string;
-    html: string;
+    content: string;
+    extra?: Record<string, string>;
     order: number;
     metadata?: Record<string, any>;
     created: string;

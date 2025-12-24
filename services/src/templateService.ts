@@ -54,7 +54,8 @@ class TemplateService {
 
         this.axiosInstance!.post<Template>(url, {
             name: template.name,
-            html: template.html,
+            content: template.content,
+            extra: template.extra,
             order: template.order,
             metadata: template.metadata,
         })
@@ -75,7 +76,8 @@ class TemplateService {
 
         this.axiosInstance!.put<Template>(url, {
             name: template.name,
-            html: template.html,
+            content: template.content,
+            extra: template.extra,
             order: template.order,
             metadata: template.metadata,
         })
