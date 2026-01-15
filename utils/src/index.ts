@@ -3,6 +3,7 @@ import {cursorUtils} from "./cursorUtils";
 import {errorUtils} from "./errorUtils";
 import {mobileUtils} from "./mobileUtils";
 import {objectUtils} from "./objectUtils";
+import {sortingUtils} from "./sortingUtils";
 import {type StorageFacade, storageUtils} from "./storageUtils";
 import {stringUtils} from "./stringUtils";
 
@@ -13,5 +14,6 @@ export {cursorUtils};
 export {errorUtils};
 export {mobileUtils};
 export {objectUtils};
+export {sortingUtils};
 export {storageUtils};
 export {stringUtils};
