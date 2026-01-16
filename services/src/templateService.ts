@@ -25,6 +25,12 @@ class TemplateService {
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("TemplateService not initialized");
+        }
+    }
+
     public listTemplates = (
         cursor: string | null,
         limit: number,
@@ -37,6 +43,7 @@ class TemplateService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<TemplateList>(url)
             .then(response => {
                 const json: TemplateList = response.data;
@@ -52,6 +59,7 @@ class TemplateService {
     ): void => {
         const url = `/api/v${this.version}/template/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Template>(url, {
             name: template.name,
             content: template.content,
@@ -74,6 +82,7 @@ class TemplateService {
     ): void => {
         const url = `/api/v${this.version}/template/${templateId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put<Template>(url, {
             name: template.name,
             content: template.content,
@@ -95,6 +104,7 @@ class TemplateService {
     ): void => {
         const url = `/api/v${this.version}/template/${templateId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Template>(url)
             .then(response => {
                 const json: Template = response.data;
@@ -110,6 +120,7 @@ class TemplateService {
     ): void => {
         const url = `/api/v${this.version}/template/${templateId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
             .then(() => {
                 success(templateId);

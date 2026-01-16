@@ -4,7 +4,7 @@ import type {DeliveryType, NotificationList, NotificationType, Preferences, Topi
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class NotificationService {
 
@@ -34,6 +34,12 @@ class NotificationService {
         this.topicTypes = topicTypes;
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("NotificationService not initialized");
+        }
+    }
+
     public listNotifications = (
         cursor: string | null,
         limit: number,
@@ -46,6 +52,7 @@ class NotificationService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<NotificationList>(url)
         .then(response => {
             const json: NotificationList = response.data;
@@ -62,6 +69,7 @@ class NotificationService {
     ) => {
         const url = `/api/v${this.version}/notification/markAsRead`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post(url, {
             ids: notificationIds,
         })
@@ -78,6 +86,7 @@ class NotificationService {
     ) => {
         const url = `/api/v${this.version}/notification/bulkDelete`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post(url, {
             ids: notificationIds,
         })
@@ -93,6 +102,7 @@ class NotificationService {
     ) => {
         const url = `/api/v${this.version}/notification/preferences`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get(url)
         .then(response => {
             const json = response.data;
@@ -112,6 +122,7 @@ class NotificationService {
     ) => {
         const url = `/api/v${this.version}/notification/preferences`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put(url, {
             messagingToken: preferences.messagingToken,
             deliveries: this.sanitizeDeliveries(preferences.deliveries),

@@ -3,7 +3,7 @@ import type {Type, TypeList} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class TypeService {
 
@@ -25,6 +25,12 @@ class TypeService {
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("TypeService not initialized");
+        }
+    }
+
     public listTypes = (
         cursor: string | null,
         limit: number,
@@ -37,6 +43,7 @@ class TypeService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<TypeList>(url)
         .then(response => {
             const json: TypeList = response.data;
@@ -53,6 +60,7 @@ class TypeService {
     ): void => {
         const url = `/api/v${this.version}/type/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Type>(url, {
             title: type.title,
             description: type.description,
@@ -74,6 +82,7 @@ class TypeService {
     ): void => {
         const url = `/api/v${this.version}/type/${typeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put<Type>(url, {
             title: type.title,
             description: type.description,
@@ -94,6 +103,7 @@ class TypeService {
     ): void => {
         const url = `/api/v${this.version}/type/${typeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
         .then(() => {
             success(typeId);

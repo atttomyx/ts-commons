@@ -13,7 +13,7 @@ import {type StorageFacade, storageUtils, stringUtils} from "@milesoft/typescrip
 import {keys} from "@milesoft/typescript-constants";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class AuthService {
 
@@ -133,6 +133,7 @@ class AuthService {
             if (!isNaN(hours) && hours >= 24) {
                 const url = `/api/v${this.version}/auth/recordLogin`;
 
+                this.failIfNotInitialized(failure);
                 this.axiosInstance1!.post(url, {})
                 .then(this.recordLogin)
                 .catch(failure);
@@ -154,6 +155,7 @@ class AuthService {
             url += "&cursor=" + cursor;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.get(url)
         .then(response => {
             const json = response.data;
@@ -166,6 +168,7 @@ class AuthService {
     public getLoggedInUser = (success: SuccessCallback<AuthUser>, failure: FailureCallback): void => {
         const url = `/api/v${this.version}/auth/user`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.get<AuthUser>(url)
         .then(response => {
             success(response.data);
@@ -176,6 +179,7 @@ class AuthService {
     public findAccounts = (success: SuccessCallback<Account[]>, failure: FailureCallback): void => {
         const url = `/api/v${this.version}/auth/accounts`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.get(url)
         .then(response => {
             const json = response.data;
@@ -192,6 +196,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/welcome`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.post<void>(url, {
             nonce: nonce,
         })
@@ -211,6 +216,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/login`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.post<LoginResponse>(url, {
             email: email,
             password: password,
@@ -231,6 +237,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/google`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.post<LoginResponse>(url, {
             token: token,
             accountId: accountId,
@@ -249,6 +256,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/linkGoogle`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.post(url, {
             token: token,
         })
@@ -266,6 +274,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/password`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.put(url, {
             existing: existing,
             password: password,
@@ -285,6 +294,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/forgot`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.post(url, {
             email: email,
             phone: phone,
@@ -305,6 +315,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/recover`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.put<LoginResponse>(url, {
             email: email,
             phone: phone,
@@ -324,6 +335,7 @@ class AuthService {
     ): void => {
         const url = `/api/v${this.version}/auth/switch`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.put<void>(url, {
             accountId: accountId,
         })
@@ -341,6 +353,12 @@ class AuthService {
             const jwt: string = bearerToken.slice(7, bearerToken.length);
 
             this.storeAuthToken(jwt);
+        }
+    }
+
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance1 || !this.axiosInstance2) {
+            failure("AuthService not initialized");
         }
     }
 }

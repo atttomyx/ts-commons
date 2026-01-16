@@ -49,6 +49,12 @@ class CloudinaryService {
         }
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("CloudinaryService not initialized");
+        }
+    }
+
     public uploadAccountImage = (accountId: string, image: Blob | File, success: SuccessCallback<string>, failure: FailureCallback) => {
         this.uploadImage(IMAGE_TYPE_ACCOUNT, accountId, image, success, failure);
     }
@@ -82,6 +88,7 @@ class CloudinaryService {
             data.append("file", image, `${imageType.prefix}${Date.now()}.${this.getFileExtension(image)}`);
             data.append("tags", parentId);
 
+            this.failIfNotInitialized(failure);
             this.axiosInstance!.post("/upload", data, {
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",

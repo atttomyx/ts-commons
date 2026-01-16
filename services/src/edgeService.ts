@@ -3,7 +3,7 @@ import type {Edge, EdgeList} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class EdgeService {
 
@@ -25,6 +25,12 @@ class EdgeService {
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("EdgeService not initialized");
+        }
+    }
+
     public listEdges = (
         cursor: string | null,
         limit: number,
@@ -37,6 +43,7 @@ class EdgeService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<EdgeList>(url)
         .then(response => {
             const json: EdgeList = response.data;
@@ -53,6 +60,7 @@ class EdgeService {
     ): void => {
         const url = `/api/v${this.version}/edge/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Edge>(url, {
             sourceNodeId: edge.sourceNodeId,
             targetNodeId: edge.targetNodeId,
@@ -76,6 +84,7 @@ class EdgeService {
     ): void => {
         const url = `/api/v${this.version}/edge/${edgeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put<Edge>(url, {
             sourceNodeId: edge.sourceNodeId,
             targetNodeId: edge.targetNodeId,
@@ -98,6 +107,7 @@ class EdgeService {
     ): void => {
         const url = `/api/v${this.version}/edge/${edgeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
         .then(() => {
             success(edgeId);

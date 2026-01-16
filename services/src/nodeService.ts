@@ -3,7 +3,7 @@ import type {LabeledAddress, LabeledString, Node, NodeList} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class NodeService {
 
@@ -25,6 +25,12 @@ class NodeService {
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("NodeService not initialized");
+        }
+    }
+
     public listNodes = (
         cursor: string | null,
         limit: number,
@@ -37,6 +43,7 @@ class NodeService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<NodeList>(url)
         .then(response => {
             const json: NodeList = response.data;
@@ -53,6 +60,7 @@ class NodeService {
     ): void => {
         const url = `/api/v${this.version}/node/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Node>(url, {
             imageUrl: node.imageUrl,
             firstName: node.firstName,
@@ -82,6 +90,7 @@ class NodeService {
     ): void => {
         const url = `/api/v${this.version}/node/${nodeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put<Node>(url, {
             imageUrl: node.imageUrl,
             firstName: node.firstName,
@@ -110,6 +119,7 @@ class NodeService {
     ): void => {
         const url = `/api/v${this.version}/node/${nodeId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
         .then(() => {
             success(nodeId);

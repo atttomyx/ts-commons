@@ -3,7 +3,7 @@ import {authService} from "./authService";
 import type {OauthIntegrationList, OptionalOauthTokens} from "./types";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class OAuthService {
 
@@ -25,6 +25,12 @@ class OAuthService {
         this.axiosInstance = authService.createConfiguredAxiosInstance(baseUrl, timeout, retries, true);
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("OAuthService not initialized");
+        }
+    }
+
     public listIntegrations = (
         cursor: string | null,
         limit: number,
@@ -37,6 +43,7 @@ class OAuthService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<OauthIntegrationList>(url)
         .then(response => {
             const json: OauthIntegrationList = response.data;
@@ -53,6 +60,7 @@ class OAuthService {
     ) => {
         const url = `/api/v${this.version}/oauth/tokens/${integrationId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get(url)
         .then(response => {
             const json = response.data;
@@ -71,6 +79,7 @@ class OAuthService {
     ) => {
         const url = `/api/v${this.version}/oauth/tokens`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post(url, {
             integrationId: integrationId,
             code: code,
@@ -92,6 +101,7 @@ class OAuthService {
     ) => {
         const url = `/api/v${this.version}/oauth/tokens`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put(url, {
             integrationId: integrationId,
             metadata: metadata,
@@ -111,6 +121,7 @@ class OAuthService {
     ): void => {
         const url = `/api/v${this.version}/oauth/tokens/${integrationId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
         .then(() => {
             success(integrationId);

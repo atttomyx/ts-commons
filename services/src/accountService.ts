@@ -3,7 +3,7 @@ import type {Account, AccountUser, AccountUtils, Join, UserUtils} from "./types"
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class AccountService {
 
@@ -36,9 +36,16 @@ class AccountService {
         this.userUtils = userUtils;
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance1 || !this.axiosInstance2) {
+            failure("AccountService not initialized");
+        }
+    }
+
     public loadAccount = (success: SuccessCallback<Account>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/account/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.get(url)
         .then(response => {
             const account = response.data;
@@ -52,6 +59,7 @@ class AccountService {
     public saveAccount = (account: Partial<Account>, success: SuccessCallback<Account>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/account/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.put(url, {
             name: account.name,
             website: account.website,
@@ -71,6 +79,7 @@ class AccountService {
     public joinAccount = (join: Join, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/account/join`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance2!.post(url, {
             user: join.user ? {
                 firstName: join.user.firstName,
@@ -96,6 +105,7 @@ class AccountService {
     public joinAdditionalAccount = (code: string, success: SuccessCallback<AccountUser>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/account/joinAdditional`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance1!.put(url, {
             code: code,
         })

@@ -3,7 +3,7 @@ import type {Profile, User, UserList, UserUtils} from "./types";
 import {authService} from "./authService";
 
 type SuccessCallback<T> = (data: T) => void;
-type FailureCallback = (error: AxiosError | Error) => void;
+type FailureCallback = (error: AxiosError | Error | string) => void;
 
 class UserService {
 
@@ -29,9 +29,16 @@ class UserService {
         this.userUtils = userUtils;
     }
 
+    private failIfNotInitialized = (failure: FailureCallback): void => {
+        if (!this.axiosInstance) {
+            failure("UserService not initialized");
+        }
+    }
+
     public loadProfile = (success: SuccessCallback<Profile>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/profile/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get(url)
         .then(response => {
             const profile = response.data;
@@ -45,6 +52,7 @@ class UserService {
     public saveProfile = (profile: Profile, success: SuccessCallback<Profile>, failure: FailureCallback) => {
         const url = `/api/v${this.version}/profile/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put(url, {
             firstName: profile.firstName,
             lastName: profile.lastName,
@@ -74,6 +82,7 @@ class UserService {
             url += `&cursor=${cursor}`;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<UserList>(url)
         .then(response => {
             const json: UserList = response.data;
@@ -97,6 +106,7 @@ class UserService {
             url += "&cursor=" + cursor;
         }
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.get<UserList>(url)
         .then(response => {
             const json = response.data;
@@ -115,6 +125,7 @@ class UserService {
     ): void => {
         const url = `/api/v${this.version}/user/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.post<User>(url, {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -141,6 +152,7 @@ class UserService {
     ): void => {
         const url = `/api/v${this.version}/user/${userId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.put<User>(url, {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -167,6 +179,7 @@ class UserService {
     ): void => {
         const url = `/api/v${this.version}/user/${userId}/`;
 
+        this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
         .then(() => {
             success(userId);
