@@ -15,6 +15,16 @@ import {keys} from "@milesoft/typescript-constants";
 type SuccessCallback<T> = (data: T) => void;
 type FailureCallback = (error: AxiosError | Error | string) => void;
 
+const mayRetry = (error: AxiosError): boolean => {
+    // 1. Protection against client-side timeouts (ECONNABORTED)
+    if (error.code === 'ECONNABORTED') {
+        return false;
+    }
+
+    // 2. Safe methods (GET, HEAD, OPTIONS) + 5xx errors
+    return axiosRetry.isSafeRequestError(error);
+};
+
 class AuthService {
 
     private local: StorageFacade;
@@ -86,7 +96,7 @@ class AuthService {
         axiosRetry(instance, {
             retries: retries,
             retryDelay: axiosRetry.exponentialDelay,
-            retryCondition: axiosRetry.isSafeRequestError,
+            retryCondition: mayRetry,
         });
 
         if (interceptors) {
