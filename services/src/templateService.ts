@@ -31,6 +31,27 @@ class TemplateService {
         }
     }
 
+    public libraryTemplates = (
+        cursor: string | null,
+        limit: number,
+        success: SuccessCallback<TemplateList>,
+        failure: FailureCallback
+    ): void => {
+        let url = `/api/v${this.version}/template/library?limit=${limit}`;
+
+        if (cursor) {
+            url += `&cursor=${cursor}`;
+        }
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance!.get<TemplateList>(url)
+            .then(response => {
+                const json: TemplateList = response.data;
+                success(json);
+            })
+            .catch(failure);
+    };
+
     public listTemplates = (
         cursor: string | null,
         limit: number,
@@ -102,7 +123,23 @@ class TemplateService {
         success: SuccessCallback<Template>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v${this.version}/template/${templateId}/`;
+        const url = `/api/v${this.version}/template/${templateId}/copy`;
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance!.post<Template>(url)
+            .then(response => {
+                const json: Template = response.data;
+                success(json);
+            })
+            .catch(failure);
+    };
+
+    public installTemplate = (
+        libraryId: string,
+        success: SuccessCallback<Template>,
+        failure: FailureCallback
+    ): void => {
+        const url = `/api/v${this.version}/template/${libraryId}/install`;
 
         this.failIfNotInitialized(failure);
         this.axiosInstance!.post<Template>(url)
