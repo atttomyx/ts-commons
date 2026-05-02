@@ -237,6 +237,19 @@ export interface Preferences {
 
 // oauth
 
+export type Environment =
+    | "Sand"
+    | "Prod";
+
+export type OauthType =
+    | "Account"
+    | "User";
+
+export interface OauthParameter {
+    key: string;
+    value: string;
+}
+
 export interface OauthIntegration {
     id: string;
     title: string;
@@ -245,6 +258,10 @@ export interface OauthIntegration {
     redirectUrl: string;
     clientId: string;
     scope: string;
+    type: OauthType;
+    environment: Environment;
+    ephemeral: boolean;
+    parameters: OauthParameter[];
     created: string;
     updated: string;
 }
