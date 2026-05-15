@@ -186,6 +186,21 @@ class UserService {
         })
         .catch(failure);
     }
+
+    public reinviteUser = (
+        userId: string,
+        success: SuccessCallback<string>,
+        failure: FailureCallback
+    ): void => {
+        const url = `/api/v${this.version}/user/${userId}/reinvite`;
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance!.post(url)
+        .then(() => {
+            success(userId);
+        })
+        .catch(failure);
+    }
 }
 
 export const userService = new UserService();
