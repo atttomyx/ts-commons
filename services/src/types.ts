@@ -78,6 +78,7 @@ export interface User {
     email: string;
     phone?: string;
     imageUrl?: string;
+    pending?: boolean;
     typeId?: string;
     roles: string[];
     created: string;
