@@ -66,7 +66,12 @@ class AuthService {
             return config;
         };
 
-        this.onResponseSuccess = (response: AxiosResponse): AxiosResponse => response;
+        this.onResponseSuccess = (response: AxiosResponse): AxiosResponse => {
+            if (response && response.headers) {
+                this.extractAuthHeader(response.headers);
+            }
+            return response;
+        };
 
         this.onResponseError = (err: AxiosError): AxiosPromise => {
             const status: number = err.response ? err.response.status : 0;
