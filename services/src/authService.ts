@@ -130,6 +130,21 @@ class AuthService {
         this.local.clear(keys.authToken);
     }
 
+    public logout = (
+        success: SuccessCallback<void>,
+        failure: FailureCallback
+    ): void => {
+        const url = `/api/v${this.version}/auth/logout`;
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance1!.post<void>(url, {})
+        .then(() => {
+            this.clearAuthToken();
+            success();
+        })
+        .catch(failure);
+    }
+
     private recordLogin = (): void => {
         const timestamp: string = Date.now().toString();
         this.local.setStr(keys.loginAt, timestamp);
