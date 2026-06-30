@@ -76,7 +76,7 @@ class AuthService {
         this.onResponseError = (err: AxiosError): AxiosPromise => {
             const status: number = err.response ? err.response.status : 0;
 
-            if (status === 401 || status === 403) {
+            if (status === 401) {
                 this.clearAuthToken();
 
                 if (onUnauthenticated) {
