@@ -82,6 +82,8 @@ class AuthService {
                 if (onUnauthenticated) {
                     onUnauthenticated();
                 }
+            } else if (err.response && err.response.headers) {
+                this.extractAuthHeader(err.response.headers);
             }
 
             return Promise.reject(err);
