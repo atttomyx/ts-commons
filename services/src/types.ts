@@ -194,7 +194,8 @@ export type DeliveryType =
     | "None"
     | "Mobile"
     | "App"
-    | "Email";
+    | "Email"
+    | "Sms";
 
 export type NotificationState =
     | "New"
