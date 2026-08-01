@@ -70,6 +70,20 @@ class UserService {
         .catch(failure);
     }
 
+    public deleteSelf = (
+        success: SuccessCallback<void>,
+        failure: FailureCallback
+    ): void => {
+        const url = `/api/v${this.version}/profile/gdpr`;
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance!.delete(url)
+        .then(() => {
+            success();
+        })
+        .catch(failure);
+    }
+
     public listUsers = (
         cursor: string | null,
         limit: number,
@@ -172,12 +186,27 @@ class UserService {
         .catch(failure);
     }
 
-    public deleteUser = (
+    public softDeleteUser = (
         userId: string,
         success: SuccessCallback<string>,
         failure: FailureCallback
     ): void => {
-        const url = `/api/v${this.version}/user/${userId}/`;
+        const url = `/api/v${this.version}/user/${userId}/soft`;
+
+        this.failIfNotInitialized(failure);
+        this.axiosInstance!.delete(url)
+        .then(() => {
+            success(userId);
+        })
+        .catch(failure);
+    }
+
+    public hardDeleteUser = (
+        userId: string,
+        success: SuccessCallback<string>,
+        failure: FailureCallback
+    ): void => {
+        const url = `/api/v${this.version}/user/${userId}/hard`;
 
         this.failIfNotInitialized(failure);
         this.axiosInstance!.delete(url)
